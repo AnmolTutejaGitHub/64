@@ -5,19 +5,20 @@ const app = express();
 const config = require("../config/config");
 const startServices = require("../utils/startServices");
 const RedisClient = require("../RedisClient");
+const userRoutes = require('../Routes/UserRoutes');
+
 
 app.use(cors({
     origin: `${config.FRONTEND_URL}`,
     credentials: true
 }));
-
 app.use(express.json());
+app.use("/api/user",userRoutes);
 
 
 startServices();
 
 const PORT = config.PORT;
-
 app.listen(PORT,()=>{
     console.log(`server is listening on PORT ${PORT}`);
 })
