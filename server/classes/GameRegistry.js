@@ -10,8 +10,13 @@ class GameRegistry {
         this.activeGames.set(gameid,game);
     }
 
-    getGame(gameid){
-        return this.activeGames.get(gameid);
+    async getGame(gameid){
+        let game = this.activeGames.get(gameid);
+        if(!game){
+            game = await Game.loadGameFromRedis(gameid);
+            if(game) this.activeGames.set(gameid,game);
+        }
+        return game;
     }
 
     deleteGame(gameid){

@@ -4,9 +4,17 @@ const constant = {
     DRAW : 'draw',
     CHECKMATE : 'checkmate',
     WINNER : 'winner',
-    GAME_OVER : 'game-over',
+    GAME_OVER : 'game_over',
     RESIGN : 'resign',
+    STALEMATE : 'stalemate',
+    INSUFFICIENT_MATERIAL : 'insufficient_material',
     ONGOING : 'ongoing',
-    INVALID_MOVE : 'invalid_move'
+    INVALID_MOVE : 'invalid_move',
+    NOT_YOUR_TURN : 'not_your_turn',
+    THREEFOLD_REPETITION : 'threefold_repetition',
+    GAME_ALREADY_ENDED : 'game_already_ended',
+    RAPID : 'rapid',
+    BLITZ : 'blitz',
+    BULLET : 'bullet',
 }
 module.exports = constant;

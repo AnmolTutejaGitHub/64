@@ -6,6 +6,7 @@ const config = require("../config/config");
 const startServices = require("../utils/startServices");
 const RedisClient = require("../RedisClient");
 const userRoutes = require('../Routes/UserRoutes');
+const GameRoutes = require('../Routes/GameRoutes');
 
 
 app.use(cors({
@@ -14,6 +15,7 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use("/api/user",userRoutes);
+app.use("/api/game",GameRoutes);
 
 
 startServices();
