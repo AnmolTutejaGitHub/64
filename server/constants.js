@@ -16,5 +16,7 @@ const constant = {
     RAPID : 'rapid',
     BLITZ : 'blitz',
     BULLET : 'bullet',
+    WAITING : 'waiting',
+    MATCH_FOUND : 'match_found',
 }
 module.exports = constant;
