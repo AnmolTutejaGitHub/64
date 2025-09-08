@@ -27,18 +27,18 @@ function GetVerified() {
     }
   }
   return (
-      <div className="h-[100vh] w-[100vw] flex items-center justify-center bg-[#F8F9FB]">
+      <div className="h-[100vh] w-[100vw] flex items-center justify-center bg-[#111319]">
         <FramerMotionProvider>
-        <fieldset className="rounded-xl w-[24rem] h-[22rem] p-8 shadow-xl bg-white border border-gray-200">
-          <legend className="text-2xl font-bold text-[#F75904]/60 mb-6">
+        <fieldset className="rounded-xl w-[30rem] h-[24rem] p-8 shadow-xl bg-[#2D3748]">
+          <legend className="text-2xl font-bold text-[#FF33AE] mb-6">
             Get Verified
           </legend>
 
-          <p className="text-sm text-gray-500 mb-4">
+          <p className="text-lg text-[#F9F1F1] mb-4">
             Enter your email to get verified.
           </p>
 
-          <label className="block text-sm font-medium text-gray-600">Email</label>
+          <label className="block text-lg font-medium text-[#F9F1F1]">Email</label>
           <input
             type="email"
             className="input input-bordered w-full mt-1 rounded-lg bg-gray-100 text-black p-2"
@@ -46,16 +46,16 @@ function GetVerified() {
             onChange={(e)=>setEmail(e.target.value)}
           />
 
-          <button className="btn mt-6 w-full bg-[#F75904]/60 hover:bg-[#F75904]/70 text-white rounded-lg text-lg font-semibold p-2"
+          <button className="btn mt-6 w-full bg-[#FF33AE] hover:bg-[#FF33AE]/70 text-white rounded-lg text-lg font-semibold p-2"
           onClick={sendVerfificationEmail}>
             Send Verification Token
           </button>
 
-          <div className="text-sm text-gray-500 mt-6 text-center">
+          <div className="text-lg text-[#F9F1F1] mt-6 text-center">
             Already verified?{" "}
             <Link
               to="/login"
-              className="text-[#F75904]/60 hover:text-[#F75904]/80 font-semibold hover:underline"
+              className="text-[#F75904]/60 text-[#FF33AE] font-semibold hover:underline"
             >
               Login
             </Link>

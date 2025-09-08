@@ -6,7 +6,7 @@ import FramerMotionProvider from "../../Provider/FramerMotionProvider/FramerMoti
 
 function VerifyYourAccount() {
   const { token } = useParams();
-  const [loading, setLoading] = useState(false);
+  const [loading,setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleVerify = async () => {
@@ -26,21 +26,21 @@ function VerifyYourAccount() {
   };
 
   return (
-      <div className="h-[100vh] w-[100vw] flex items-center justify-center bg-[#F8F9FB]">
+      <div className="h-[100vh] w-[100vw] flex items-center justify-center bg-[#111319]">
         <FramerMotionProvider>
-        <fieldset className="rounded-xl w-[24rem] h-[15rem] p-8 shadow-xl bg-white border border-gray-200">
-          <legend className="text-2xl font-bold text-[#F75904]/60 mb-6">
+        <fieldset className="rounded-xl w-[30rem] h-[18rem] p-8 shadow-xl bg-[#2D3748]">
+          <legend className="text-2xl font-bold text-[#FF33AE] mb-6">
             Verify Your Account
           </legend>
 
-          <p className="text-md text-gray-500 mb-4">
+          <p className="text-lg text-[#F9F1F1] mb-4">
             Click the button below to verify your account.
           </p>
 
           <button
             onClick={handleVerify}
             disabled={loading}
-            className="btn mt-6 w-full bg-[#F75904]/60 hover:bg-[#F75904]/70 text-white rounded-lg text-lg font-semibold disabled:opacity-50 p-2"
+            className="btn mt-6 w-full  bg-[#FF33AE] hover:bg-[#FF33AE]/70 text-white rounded-lg text-lg font-semibold disabled:opacity-50 p-2"
           >
             {loading ? "Verifying..." : "Verify Account"}
           </button>

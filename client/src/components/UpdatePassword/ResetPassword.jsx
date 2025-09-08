@@ -6,8 +6,8 @@ import FramerMotionProvider from "../../Provider/FramerMotionProvider/FramerMoti
 
 function ResetPassword() {
   const { token } = useParams();
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [password,setPassword] = useState("");
+  const [confirmPassword,setConfirmPassword] = useState("");
 
   async function handleResetPassword() {
     const toastId = toast.loading("Updating your password...");
@@ -27,14 +27,14 @@ function ResetPassword() {
   }
 
   return (
-      <div className="w-[100vw] h-[100vh] flex items-center justify-center bg-[#F8F9FB]">
+      <div className="w-[100vw] h-[100vh] flex items-center justify-center bg-[#111319]">
         <FramerMotionProvider>
-        <fieldset className="rounded-xl w-[24rem] h-auto p-8 shadow-xl bg-white border border-gray-200">
-          <legend className="text-2xl font-bold text-[#F75904]/60 mb-6">
+        <fieldset className="rounded-xl w-[30rem] h-[30rem] p-8 shadow-xl bg-[#2D3748]">
+          <legend className="text-2xl font-bold text-[#FF33AE] mb-6">
             Reset Password
           </legend>
 
-          <label className="block text-sm font-medium text-gray-600">New Password</label>
+          <label className="block text-lg font-medium text-[#F9F1F1]">New Password</label>
           <input
             type="password"
             value={password}
@@ -43,7 +43,7 @@ function ResetPassword() {
             placeholder="Enter new password"
           />
 
-          <label className="block text-sm font-medium text-gray-600 mt-4">Confirm Password</label>
+          <label className="block text-lg font-medium text-[#F9F1F1] mt-6">Confirm Password</label>
           <input
             type="password"
             value={confirmPassword}
@@ -54,16 +54,16 @@ function ResetPassword() {
 
           <button
             onClick={handleResetPassword}
-            className="btn mt-6 w-full bg-[#F75904]/60 hover:bg-[#F75904]/70 text-white rounded-lg text-lg font-semibold p-2"
+            className="btn mt-8 w-full bg-[#FF33AE] hover:bg-[#FF33AE]/70 text-white rounded-lg text-lg font-semibold p-2"
           >
             Update Password
           </button>
 
-          <div className="text-sm text-gray-500 mt-6 text-center">
+          <div className="text-lg text-[#F9F1F1] mt-6 text-center">
             Remember your password?{" "}
             <Link
               to="/login"
-              className="text-[#F75904]/60 hover:text-[#F75904]/80 font-semibold hover:underline"
+              className="text-[#F75904]/60 text-[#FF33AE] font-semibold hover:underline"
             >
               Login
             </Link>

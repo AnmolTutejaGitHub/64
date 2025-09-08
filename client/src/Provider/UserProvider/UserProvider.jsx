@@ -6,9 +6,9 @@ function UserProvider({ children }) {
 
   if (isLoading) {
     return (
-      <div className="flex h-screen w-full items-center justify-center bg-black text-white">
+      <div className="flex h-screen w-full items-center justify-center bg-[#111319] text-white">
         <ClipLoader
-          color="#36d7b7"
+          color="#FF33AE"
           loading={true}
           size={60}
           aria-label="Loading Spinner"

@@ -10,7 +10,7 @@ import GetVerified from './components/Verify/GetVerified';
 import VerifyYourAccount from './components/Verify/VerifyYourAccount';
 
 function App() {
-  return (<div>
+  return (<div className='bg-[#111319]'>
     <Toaster/>
     <BrowserRouter>
     <UserProvider>

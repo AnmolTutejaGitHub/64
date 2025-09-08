@@ -38,13 +38,13 @@ function Login() {
         }
     }
     return (
-        <div className="flex items-center justify-center bg-[#F8F9FB] h-[100vh] w-[100vw]">
+        <div className="flex items-center justify-center bg-[#111319] h-[100vh] w-[100vw]">
         <FramerMotionProvider>
-          <fieldset className="rounded-xl w-[24rem] h-[30rem] p-8 shadow-xl bg-white border border-gray-200">
-            <legend className="text-2xl font-bold text-[#F75904]/60 mb-6">Login</legend>
+          <fieldset className="rounded-xl w-[30rem] h-[30rem] p-8 shadow-xl bg-[#2D3748]">
+            <legend className="text-2xl font-bold text-[#FF33AE] mb-6">Login</legend>
   
 
-            <label className="block text-sm font-medium text-gray-600">Email</label>
+            <label className="block text-lg font-medium text-[#F9F1F1]">Email</label>
             <input 
               type="email" 
               className="input input-bordered w-full mt-1 rounded-lg bg-gray-100 text-black p-2" 
@@ -52,7 +52,7 @@ function Login() {
               onChange={(e)=>setEmail(e.target.value)}
             />
   
-            <label className="block text-sm font-medium text-gray-600 mt-4">Password</label>
+            <label className="block text-lg font-medium text-[#F9F1F1] mt-4">Password</label>
             <input 
               type="password" 
               className="input input-bordered w-full mt-1 rounded-lg bg-gray-100 text-black p-2" 
@@ -61,17 +61,17 @@ function Login() {
             />
   
             <div className="text-right mt-2">
-              <Link to="/forget-password"  className="text-sm text-[#F75904]/60 hover:text-[#F75904]/80 hover:underline font-medium">Forgot Password?</Link>
+              <Link to="/forget-password"  className="text-lg text-[#FF33AE] hover:text-[#FF33AE] hover:underline font-medium">Forgot Password?</Link>
             </div>
   
-            <button className="btn mt-6 w-full bg-[#F75904]/60 hover:bg-[#F75904]/70 text-white rounded-lg text-lg font-semibold p-2"
+            <button className="btn mt-6 w-full bg-[#FF33AE] hover:bg-[#FF33AE]/70 text-white rounded-lg text-lg font-semibold p-2"
                 onClick={login}>
               Login
             </button>
   
-            <div className="text-sm text-gray-500 mt-6 text-center">
+            <div className="text-lg text-[#F9F1F1] mt-6 text-center">
               Don't have an account?{" "}
-              <Link to="/signup" className="text-[#F75904]/60 hover:text-[#F75904]/80 font-semibold hover:underline">Sign up</Link>
+              <Link to="/signup" className="text-[#FF33AE] hover:text-[#FF33AE] font-semibold hover:underline">Sign up</Link>
             </div>
           </fieldset>
           </FramerMotionProvider>
