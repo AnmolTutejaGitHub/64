@@ -23,7 +23,7 @@ router.post("/get-requestid", Auth, async (req, res) => {
     }
 });
 
-router.post("/find-match", Auth, async (req, res) => {
+router.post("/find-match", Auth,async(req, res) => {
     const userid = req.userId;
     const { mode,requestId } = req.body;
     const queueKey = `queue:${mode}`;
@@ -32,11 +32,11 @@ router.post("/find-match", Auth, async (req, res) => {
 
     try {
         const luaScript = `
-            local opponent = redis.call("LPOP", KEYS[1])
+            local opponent = redis.call("LPOP",KEYS[1])
             if opponent then
                 return opponent
             else
-                redis.call("RPUSH", KEYS[1], ARGV[1])
+                redis.call("RPUSH",KEYS[1],ARGV[1])
                 return nil
             end
         `;
@@ -49,13 +49,13 @@ router.post("/find-match", Auth, async (req, res) => {
 
             const init_game_detail = JSON.stringify({
                 gameid,
-                white: opponent_detail.userid,
-                black: userid,
+                white_id: opponent_detail.userid,
+                black_id: userid,
                 mode
             });
             
             await RedisClient.publish("game:new",init_game_detail);
-            // will have ack method too if game created then notify players
+            // will have ack method too to avoid notifying player later
 
             const opponent_socketid = await RedisClient.hget("socketMap",opponent.userid);
             io.to(opponent_socketid).emit(constant.MATCH_FOUND, {
@@ -67,7 +67,7 @@ router.post("/find-match", Auth, async (req, res) => {
             });
 
             const user_socketid = await RedisClient.hget("socketMap",userid);
-            io.to(user_socketid).emit(constant.MATCH_FOUND, {
+            io.to(user_socketid).emit(constant.MATCH_FOUND,{
                 gameid,
                 white: opponent_detail.userid,
                 black: userid,
@@ -75,9 +75,9 @@ router.post("/find-match", Auth, async (req, res) => {
                 redirect: `http://localhost:5173/game/mode=${mode}/${gameid}`,
             });
             
-            return res.send({ status: constant.MATCH_FOUND, gameid });
+            return res.status(200).send({ status: constant.MATCH_FOUND,gameid });
         } else {
-            return res.status(200).json({ status: constant.WAITING, requestId });
+            return res.status(200).send({ status: constant.WAITING,requestId });
         }
     } catch (err) {
         return res.status(500).send(err);

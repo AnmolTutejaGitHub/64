@@ -18,5 +18,11 @@ const constant = {
     BULLET : 'bullet',
     WAITING : 'waiting',
     MATCH_FOUND : 'match_found',
+    OK : 'ok',
+    ERROR : 'error',
+    SOCKET_REGISTERED : 'socket:registered',
+    NEW_MOVE : 'new_move',
+    GAME_NOT_FOUND : 'game_not_found',
+    GET_GAME_STATE : 'get_game_state'
 }
 module.exports = constant;

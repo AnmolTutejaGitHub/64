@@ -6,6 +6,7 @@ class GameRegistry {
     }
 
     createGame(gameid,white_id,black_id,mode){
+        if(this.activeGames.has(gameid)) return;
         const game = new Game(gameid,white_id,black_id,mode);
         this.activeGames.set(gameid,game);
     }
