@@ -8,6 +8,10 @@ import ForgetPassword from './components/UpdatePassword/ForgetPassword';
 import ResetPassword from './components/UpdatePassword/ResetPassword';
 import GetVerified from './components/Verify/GetVerified';
 import VerifyYourAccount from './components/Verify/VerifyYourAccount';
+import Start from './components/Start/Start';
+import ProtectedRoute from './Provider/ProtectedRoute/ProtectedRoute';
+import FindGame from './components/FindGame/FindGame';
+import Game from './components/Game/Game';
 
 function App() {
   return (<div className='bg-[#111319]'>
@@ -22,6 +26,23 @@ function App() {
         <Route path="/verify-email/:token" element={<VerifyYourAccount/>} />
         <Route path="/forget-password" element={<ForgetPassword/>} />
         <Route path="/update-password/:token" element={<ResetPassword/>} />
+        <Route path="/start" element={
+          <ProtectedRoute>
+            <Start/>
+        </ProtectedRoute>
+        } />
+
+      <Route path="/find/:mode/:requestid" element={
+          <ProtectedRoute>
+            <FindGame/>
+          </ProtectedRoute>
+        } />
+
+        <Route path="/game/:mode/:gameid" element={
+           <ProtectedRoute>
+            <Game/>
+          </ProtectedRoute>
+        }/>
       </Routes>
       </UserProvider>
      </BrowserRouter>

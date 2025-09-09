@@ -23,6 +23,8 @@ const constant = {
     SOCKET_REGISTERED : 'socket:registered',
     NEW_MOVE : 'new_move',
     GAME_NOT_FOUND : 'game_not_found',
-    GET_GAME_STATE : 'get_game_state'
+    GET_GAME_STATE : 'get_game_state',
+    RESOLVED : 'resolved',
+    TERMINATED : 'terminated'
 }
 module.exports = constant;

@@ -31,7 +31,7 @@ app.set("io",io);
 io.on('connection',async(socket)=>{
     // note : client will make connetion to this server when client hit
     // http://localhost:5173/find/mode=${mode}/${requestId}
-    const userid = socket.handshake.query.userid;
+    const userid = socket.handshake.auth.userid;
     if (userid) {
         try {
             await RedisClient.hset("socketMap",userid,socket.id);

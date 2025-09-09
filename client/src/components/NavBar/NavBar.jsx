@@ -1,6 +1,4 @@
-import { MdOutlineLightMode } from "react-icons/md";
 import { FaGithub } from "react-icons/fa";
-import { ArrowTopRightOnSquareIcon } from "@heroicons/react/24/outline";
 import { Link } from "react-router";
 import { useState } from "react";
 import useUserStore from "../../store/userStore";
