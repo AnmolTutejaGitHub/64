@@ -30,6 +30,7 @@ router.post("/get-requestid", Auth, async (req,res) => {
 })
 
 router.post("/find-match",Auth,async(req, res) => {
+    // will later have a microservice to remove user from queue which checks every 5s
     const userid = req.userId;
     const { mode,requestId } = req.body;
     const queueKey = `queue:${mode}`;
@@ -38,7 +39,6 @@ router.post("/find-match",Auth,async(req, res) => {
     const io = req.app.get("io");
 
     try {
-
         const WaitingInQueue = await RedisClient.hget(`queueMap:${mode}`,userid);
         if(WaitingInQueue) {
             if(WaitingInQueue != requestId){
@@ -141,5 +141,47 @@ router.get('/chess-quotes',async (req,res) => {
         return res.status(500).send(err);
     }
 })
+
+router.post("/remove-from-queue",Auth,async (req,res) => {
+    const userid = req.userId;
+    const { mode,requestId } = req.body;
+
+    const queueKey = `queue:${mode}`;
+    const queueMap = `queueMap:${mode}`;
+
+    try {
+        const waitingInQueue = await RedisClient.hget(queueMap,userid);
+        if (!waitingInQueue) {
+            return res.status(200).send({ status: constant.NOT_IN_QUEUE });
+        }
+
+        const luaScript = `
+            local queueKey = KEYS[1]
+            local queueMap = KEYS[2]
+            local userid = ARGV[1]
+
+
+            local list = redis.call("LRANGE",queueKey,0,-1)
+            for i=1, #list do
+                if list[i] == userid then
+                    redis.call("LREM",queueKey,0,list[i])
+                    break
+                end
+            end
+
+            redis.call("HDEL",queueMap,userid)
+            return 1
+        `;
+
+        await RedisClient.eval(luaScript,2,queueKey,queueMap,userid);
+        await RedisClient.hset("requestIdResolved",requestId,JSON.stringify({message : "Removed from queue"}));
+        await RedisClient.hdel("requestIdMap",requestId);
+
+        return res.status(200).send({ status: constant.REMOVED_FROM_QUEUE });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).send(err);
+    }
+});
 
 module.exports = router;

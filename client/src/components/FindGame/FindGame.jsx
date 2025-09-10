@@ -45,6 +45,23 @@ function FindGame() {
         }
     }
 
+    async function canceltheSearch(){
+        const response = await axios.post(`${import.meta.env.VITE_API_URL}/api/game/remove-from-queue`,{
+            mode : mode,
+            requestId : requestid,
+        },{
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+        const data = response.data;
+        console.log(data);
+        if(data.status == 'not_in_queue' || data.status == 'removed_from_queue'){
+            toast.success("Removed from Queue");
+            navigate("/");
+        }
+    }
+
     useEffect(() => {
         if (!socket) {
             socket = io(import.meta.env.VITE_API_URL,{
@@ -93,6 +110,7 @@ function FindGame() {
       <div className="text-2xl font-semibold text-gray-200 animate-pulse">
         Waiting for opponent...
       </div>
+      <button onClick={canceltheSearch} className="p-4 text-[#FF33AE] hover:text-[#FF33AE]/70 cursor-pointer font-bold text-md">Cancel The Search</button>
     </div>
   )
 }

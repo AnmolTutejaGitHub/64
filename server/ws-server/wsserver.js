@@ -28,16 +28,27 @@ const PORT = process.env.PORT || 9090;
 
 const gameRegistry = new GameRegistry();
 
+
 const subscriber = RedisClient.duplicate();
-subscriber.subscribe("game:new",(message) => {
-    try {
-        if(!message) return;
-        const data = JSON.parse(message);
-        const { gameid,white_id,black_id,mode } = data;
-        gameRegistry.createGame(gameid,white_id,black_id,mode);
-    } catch (err) {
-        console.error(err);
+
+subscriber.on('message',(channel,message) => {
+    if (channel == 'game:new') {
+        try {
+            if (!message) return;
+            const data = JSON.parse(message);
+            const { gameid,white_id,black_id,mode } = data;
+            gameRegistry.createGame(gameid,white_id,black_id,mode);
+            console.log('Game created:', data);
+        } catch (err) {
+            console.error(err);
+        }
     }
+});
+
+subscriber.subscribe('game:new').then(() => {
+    console.log('Subscribed to game:new channel');
+}).catch(err => {
+    console.log(err);
 });
 
 io.on('connection',async(socket)=>{
@@ -49,6 +60,7 @@ io.on('connection',async(socket)=>{
 
     socket.on(constant.NEW_MOVE,async(data)=>{
         const {move} = data;
+        console.log('Received move data:', JSON.stringify(data, null, 2));
         const game = await gameRegistry.getGame(gameid);
         let result = null;
 

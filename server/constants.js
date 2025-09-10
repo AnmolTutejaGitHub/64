@@ -25,6 +25,9 @@ const constant = {
     GAME_NOT_FOUND : 'game_not_found',
     GET_GAME_STATE : 'get_game_state',
     RESOLVED : 'resolved',
-    TERMINATED : 'terminated'
+    TERMINATED : 'terminated',
+    REMOVED_FROM_QUEUE : 'removed_from_queue',
+    NOT_IN_QUEUE : 'not_in_queue',
+    SUCCESS : 'success'
 }
 module.exports = constant;

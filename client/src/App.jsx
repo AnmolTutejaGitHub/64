@@ -12,6 +12,8 @@ import Start from './components/Start/Start';
 import ProtectedRoute from './Provider/ProtectedRoute/ProtectedRoute';
 import FindGame from './components/FindGame/FindGame';
 import Game from './components/Game/Game';
+import Profile from './components/Profile/Profile';
+import Pricing from './components/Pricing/Pricing';
 
 function App() {
   return (<div className='bg-[#111319]'>
@@ -43,6 +45,12 @@ function App() {
             <Game/>
           </ProtectedRoute>
         }/>
+         <Route path="/profile" element={
+           <ProtectedRoute>
+            <Profile/>
+          </ProtectedRoute>
+        }/>
+        <Route path="/pricing" element={<Pricing/>}/>
       </Routes>
       </UserProvider>
      </BrowserRouter>
