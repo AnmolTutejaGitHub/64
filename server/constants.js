@@ -28,6 +28,7 @@ const constant = {
     TERMINATED : 'terminated',
     REMOVED_FROM_QUEUE : 'removed_from_queue',
     NOT_IN_QUEUE : 'not_in_queue',
-    SUCCESS : 'success'
+    SUCCESS : 'success',
+    GAME_ALREADY_ENDED : 'game_already_ended',
 }
 module.exports = constant;

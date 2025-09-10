@@ -21,42 +21,48 @@ class Game {
     }
 
     async makeMove(move,player_id) {
-        if(this.result.status != constant.ONGOING){
-            return { valid: false,message: GAME_ALREADY_ENDED };
+        try{
+            if(this.result.status != constant.ONGOING){
+                return { valid: false,message: GAME_ALREADY_ENDED };
+            }
+    
+            const curr_turn = this.chess.turn();
+            const is_white_turn = curr_turn == 'w';
+                
+            if ((is_white_turn && player_id != this.white_id) || (!is_white_turn && player_id != this.black_id)){
+                return { valid: false,message: constant.NOT_YOUR_TURN }
+            }
+    
+            const move_data = this.chess.move(move);
+            console.log("movedata",move_data);
+            if(move_data == null) {
+                return { valid: false,message: constant.INVALID_MOVE };
+            }
+    
+            this.fen = this.chess.fen();
+            this.fenhistory.push(this.fen);
+            this.lastmove = {...move_data,player_id : player_id,timestamp : Date.now()};
+            this.moves.push(this.lastmove);
+    
+            if(this.chess.isGameOver()) {
+                this.handleGameEnd();
+            }
+    
+            await this.saveToRedis();
+    
+            return {
+                valid: true,
+                fen: this.fen,
+                history: this.chess.history(),
+                moves: this.moves,
+                lastmove:this.lastmove,
+                gameOver: this.chess.isGameOver(),
+                result: this.result,
+            }
+        }catch(err){
+            console.log(err);
         }
-
-        const curr_turn = this.chess.turn();
-        const is_white_turn = curr_turn == 'w';
-            
-        if ((is_white_turn && player_id != this.white_id) || (!is_white_turn && player_id != this.black_id)){
-            return { valid: false,message: constant.NOT_YOUR_TURN }
-        }
-
-        const move_data = this.chess.move(move);
-        if(move_data == null) {
-            return { valid: false,message: constant.INVALID_MOVE };
-        }
-
-        this.fen = this.chess.fen();
-        this.fenhistory.push(this.fen);
-        this.lastmove = {...move_data,player_id : player_id,timestamp : Date.now()};
-        this.moves.push(this.lastmove);
-
-        if(this.chess.isGameOver()) {
-            this.handleGameEnd();
-        }
-
-        await this.saveToRedis();
-
-        return {
-            valid: true,
-            fen: this.fen,
-            history: this.chess.history(),
-            moves: this.moves,
-            lastmove:this.lastmove,
-            gameOver: this.chess.isGameOver(),
-            result: this.result,
-        }
+        
     }
 
     async resign(resignedBy) {

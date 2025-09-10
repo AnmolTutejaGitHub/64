@@ -59,13 +59,16 @@ io.on('connection',async(socket)=>{
     socket.join(gameid);
 
     socket.on(constant.NEW_MOVE,async(data)=>{
-        const {move} = data;
-        console.log('Received move data:', JSON.stringify(data, null, 2));
+        const move = data;
+        console.log('Received move data:',move);
         const game = await gameRegistry.getGame(gameid);
         let result = null;
 
         if(game) result = await game.makeMove(move,userid);
         else result = {message : constant.GAME_NOT_FOUND};
+        console.log("game move : ",result);
+        const gameState = game.getGameState();
+        if(!result?.valid) result =  {...result,...gameState};
 
         io.to(gameid).emit(constant.NEW_MOVE,result);
     })
