@@ -40,7 +40,7 @@ function App() {
           </ProtectedRoute>
         } />
 
-        <Route path="/game/:mode/:gameid" element={
+        <Route path="/game/:gameid" element={
            <ProtectedRoute>
             <Game/>
           </ProtectedRoute>

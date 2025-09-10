@@ -6,11 +6,13 @@ import { io } from "socket.io-client";
 import toast from 'react-hot-toast';
 import GameNotFound from "./GameNotFound";
 import GameEnded from "./GameEnded";
+import SettingMenu from "./SettingMenu";
+import ChessClock from "./ChessClock";
 
 let socket;
 
 function Game(){
-    const {mode,gameid} = useParams();
+    const {gameid} = useParams();
     const { userid } = useUserStore();
     const [fen,setFen] = useState("");
     const [gameDetails,setGameDetails] = useState(null);
@@ -35,9 +37,17 @@ function Game(){
         })
 
         socket.on('new_move',(data)=>{
+            console.log("new move",data);
+            setFen(data?.gameState?.fen);
+            if(data?.gameState?.result?.status == 'resign')  toast.success(`${JSON.stringify(data?.gameState?.result,null,2)}`);
+            if(data?.gameState?.gameOver) toast.success(`${JSON.stringify(data?.gameState?.result,null,2)}`);
+            setGameDetails(data.gameState);
+        })
+
+        socket.on('resign',(data)=>{
             console.log(data);
-            setFen(data.fen);
-            if(data.gameOver) toast.success(`${JSON.stringify(data.result)}`);
+            if(data.result.status=='resign') toast.success(`${JSON.stringify(data.result,null,2)}`);
+            setGameDetails(data.gameState);
         })
 
         return () => {
@@ -46,13 +56,24 @@ function Game(){
                 socket = null;
             }
         };
-    },[]);
+    },[])
+
+    useEffect(()=>{
+        console.log(userid);
+        console.log("game details",gameDetails);
+    },[gameDetails])
+
+    function Resign(){
+        socket.emit('resign');
+    }
+
 
     function onPieceDrop({ piece,sourceSquare,targetSquare }) {
         console.log("Piece dropped:", piece, "from", sourceSquare, "to", targetSquare);
         socket.emit('new_move',{
             from : sourceSquare,
-            to : targetSquare
+            to : targetSquare,
+            promotion : null
         })
         return true;
     }
@@ -153,6 +174,11 @@ const customPieces = {
                 gameDetails?.gameOver &&
                 <GameEnded/>
             }
+
+            <div>
+                <SettingMenu resign={Resign}/>
+            </div>
+
             <div className="flex h-full w-full items-center justify-center">
             <Chessboard
                 options={{
@@ -172,6 +198,7 @@ const customPieces = {
                 }}
             />
             </div>
+            <ChessClock gameDetails={gameDetails} userId={userid}/>
         </div>
     )
 }

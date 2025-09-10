@@ -30,5 +30,9 @@ const constant = {
     NOT_IN_QUEUE : 'not_in_queue',
     SUCCESS : 'success',
     GAME_ALREADY_ENDED : 'game_already_ended',
+    DRAW_BY_AGREEMENT : 'draw_by_agreement',
+    DRAW_OFFER : 'draw_offer',
+    ACCEPT_DRAW : 'accept_draw',
+    TIMEOUT : 'timeout'
 }
 module.exports = constant;

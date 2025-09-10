@@ -82,7 +82,7 @@ function FindGame() {
 
         socket.on("match_found",(data)=>{
             console.log(data);
-            navigate(`/game/${data.mode}/${data.gameid}`);
+            navigate(`/game/${data.gameid}`);
 
         })
 

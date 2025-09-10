@@ -66,9 +66,8 @@ io.on('connection',async(socket)=>{
 
         if(game) result = await game.makeMove(move,userid);
         else result = {message : constant.GAME_NOT_FOUND};
-        console.log("game move : ",result);
-        const gameState = game.getGameState();
-        if(!result?.valid) result =  {...result,...gameState};
+        console.log("game move he : ",result);
+        if(result == undefined) result = {valid : false, gameState : game.getGameState()}; // else invlid move throwing error
 
         io.to(gameid).emit(constant.NEW_MOVE,result);
     })
@@ -91,7 +90,11 @@ io.on('connection',async(socket)=>{
         else result = { message: constant.GAME_NOT_FOUND };
 
         ack(result);
-    });
+    })
+
+    // socket.on(constant.DRAW_OFFER,()=>{
+    //     socket.to(gameid).emit(constant.DRAW_OFFER);
+    // })
 
     socket.on('disconnect',()=>{})
 })
