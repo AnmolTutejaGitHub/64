@@ -54,26 +54,23 @@ subscriber.subscribe('game:new').then(() => {
 io.on('connection',async(socket)=>{
     const userid = socket.handshake.query.userid;
     const gameid = socket.handshake.query.gameid;
+    const game = await gameRegistry.getGame(gameid);
     // gameRegistry.createGame ?? if client hit before pub/sub worked then ?? 
     // will take mode,opponent from handshake incase after frontend testing
     socket.join(gameid);
 
     socket.on(constant.NEW_MOVE,async(data)=>{
         const move = data;
-        console.log('Received move data:',move);
-        const game = await gameRegistry.getGame(gameid);
         let result = null;
 
         if(game) result = await game.makeMove(move,userid);
         else result = {message : constant.GAME_NOT_FOUND};
-        console.log("game move he : ",result);
         if(result == undefined) result = {valid : false, gameState : game.getGameState()}; // else invlid move throwing error
 
         io.to(gameid).emit(constant.NEW_MOVE,result);
     })
 
     socket.on(constant.RESIGN,async()=>{
-        const game = await gameRegistry.getGame(gameid);
         let result = null;
 
         if(game) result = await game.resign(userid);
@@ -83,7 +80,6 @@ io.on('connection',async(socket)=>{
     })
 
     socket.on(constant.GET_GAME_STATE,async (data,ack) => {
-        const game = await gameRegistry.getGame(data.gameid);
         let result = null;
     
         if (game) result = game.getGameState();

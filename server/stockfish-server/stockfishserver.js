@@ -58,10 +58,18 @@ io.on('connection',async(socket)=>{
     const gameid = socket.handshake.query.gameid;
     const depth = await RedisClient.hget('stockfishdepth',gameid) || 15;
     console.log(depth)
+    const game = await gameRegistry.getGame(gameid);
+    if(game){
+        if(game.white_id == STOCKFISH_USER_ID){
+            const gameState = game.getGameState();
+            const stockfishMove = await getBestMove(gameState?.fen,depth);
+            const stockfishresult = await game.makeMove(stockfishMove,STOCKFISH_USER_ID);
+            socket.emit(constant.NEW_MOVE,stockfishresult);
+        }
+    }
 
     socket.on(constant.NEW_MOVE,async(data)=>{
         const move = data;
-        const game = await gameRegistry.getGame(gameid);
         let result = null;
 
         if(game) result = await game.makeMove(move,userid);
@@ -76,7 +84,6 @@ io.on('connection',async(socket)=>{
     })
 
     socket.on(constant.RESIGN,async()=>{
-        const game = await gameRegistry.getGame(gameid);
         let result = null;
 
         if(game) result = await game.resign(userid);
@@ -86,7 +93,6 @@ io.on('connection',async(socket)=>{
     })
 
     socket.on(constant.GET_GAME_STATE,async (data,ack) => {
-        const game = await gameRegistry.getGame(data.gameid);
         let result = null;
     
         if (game) result = game.getGameState();

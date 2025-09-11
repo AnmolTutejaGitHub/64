@@ -8,6 +8,7 @@ import GameNotFound from "./GameNotFound";
 import GameEnded from "./GameEnded";
 import SettingMenu from "./SettingMenu";
 import ChessClock from "./ChessClock";
+import GameDetailsRender from "./GameDetailsRender";
 
 let socket;
 
@@ -192,6 +193,7 @@ const customPieces = {
                     allowDrawingArrows : true
                 }}
             />
+             <GameDetailsRender gameDetails={gameDetails}/>
             </div>
             <ChessClock gameDetails={gameDetails} userId={userid}/>
         </div>

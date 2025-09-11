@@ -72,7 +72,7 @@ function StockFishStart() {
         <input
           type="range"
           min="1"
-          max="100"
+          max="30"
           value={depth}
           onChange={(e) => setDepth(Number(e.target.value))}
           className="w-64 accent-pink-500"
