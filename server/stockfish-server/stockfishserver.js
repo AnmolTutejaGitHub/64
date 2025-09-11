@@ -1,4 +1,3 @@
-const express = require('express');
 require('dotenv').config();
 const express = require('express');
 const http = require('http');
@@ -7,8 +6,11 @@ const config = require('../config/config');
 const socketio = require('socket.io');
 const cors = require('cors');
 const constant = require('../constants');
-const RedisClient = require('../RedisClient');
 const GameRegistry = require('../classes/GameRegistry');
+const getBestMove = require('../stockfish');
+const { v4: uuidv4 } = require("uuid");
+const Auth = require('../middleware/Auth');
+const RedisClient = require('../RedisClient');
 
 app.use(cors({
     origin: `${config.FRONTEND_URL}`,
@@ -26,13 +28,36 @@ const io = socketio(server,{
 });
 
 const PORT = process.env.PORT || 8081;
+const STOCKFISH_USER_ID = Number.MAX_SAFE_INTEGER;
 
 const gameRegistry = new GameRegistry();
-// create Game via api
+
+app.post('/api/stockfish/create-stockfish-game',Auth,async (req,res)=>{
+   try{
+        const userid = req.userId;
+        const {depth,isWhite} = req.body;
+        const gameid = uuidv4();
+        const white_id = isWhite ? userid : STOCKFISH_USER_ID;
+        const black_id = isWhite ? STOCKFISH_USER_ID : userid;
+        const game = await gameRegistry.createGame(gameid,white_id,black_id,constant.STOCKFISH_GAME_MODE,Number.MAX_SAFE_INTEGER);
+        const init_game_detail = JSON.stringify({
+            gameid,
+            white_id,
+            black_id
+        })
+        await RedisClient.hset(`stockfishdepth`,gameid,depth);
+        return res.status(200).send(init_game_detail);  
+   }catch(err){
+    res.status(400).send(err);
+    console.log(err);
+   }
+})
 
 io.on('connection',async(socket)=>{
     const userid = socket.handshake.query.userid;
     const gameid = socket.handshake.query.gameid;
+    const depth = await RedisClient.hget('stockfishdepth',gameid) || 15;
+    console.log(depth)
 
     socket.on(constant.NEW_MOVE,async(data)=>{
         const move = data;
@@ -41,13 +66,12 @@ io.on('connection',async(socket)=>{
 
         if(game) result = await game.makeMove(move,userid);
         else result = {message : constant.GAME_NOT_FOUND};
-        const gameState = game.getGameState();
-        if(!result?.valid) result =  {...result,...gameState};
-        io.to(gameid).emit(constant.NEW_MOVE,result);
+        if(result == undefined) result = {valid : false, gameState : game.getGameState()};
+        socket.emit(constant.NEW_MOVE,result);
         if(result?.valid){
-            // 1) getting best move from stockfish
-            // 2) game.move
-            // emitting new_move to client 
+            const stockfishMove = await getBestMove(result?.gameState?.fen,depth);
+            const stockfishresult = await game.makeMove(stockfishMove,STOCKFISH_USER_ID);
+            socket.emit(constant.NEW_MOVE,stockfishresult);
         }
     })
 
@@ -58,7 +82,7 @@ io.on('connection',async(socket)=>{
         if(game) result = await game.resign(userid);
         else result = {message : constant.GAME_NOT_FOUND};
 
-        io.to(gameid).emit(constant.RESIGN,result);
+        socket.emit(constant.RESIGN,result);
     })
 
     socket.on(constant.GET_GAME_STATE,async (data,ack) => {

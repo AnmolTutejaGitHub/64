@@ -6,7 +6,7 @@ import axios from "axios";
 import toast from 'react-hot-toast';
 import { useNavigate } from "react-router";
 import FramerMotionProvider from "../../Provider/FramerMotionProvider/FramerMotionProvider";
-
+import { FaRobot } from "react-icons/fa";
 
 function Start(){
     const token = localStorage.getItem('token');
@@ -35,6 +35,10 @@ async function generateRequestId(mode) {
     }finally {
         toast.dismiss(id);
     }
+}
+
+function StockfishOptions(){
+    navigate("/stockfish/start");
 }
 
 
@@ -67,6 +71,12 @@ async function generateRequestId(mode) {
                     <BulletIcon color="white"/>
                     <div>Bullet</div>
                 </div>
+                <div className="flex justify-center items-center gap-4 text-white bg-[#FF33AE] p-5 w-98 rounded-md cursor-pointer hover:border-2 hover:border-white hover:bg-[#111319] hover:text-[#FF33AE] font-semibold"
+                onClick={StockfishOptions}>
+                <div className="text-2xl"><FaRobot /></div>
+                <div>Play With Stockfish</div>
+                </div>
+                
             </div>
             </FramerMotionProvider>
         </div>

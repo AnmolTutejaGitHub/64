@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "start:main": "node main-server/server.js",
-    "start:ws": "node ws-server/wsserver.js"
+    "start:ws": "node ws-server/wsserver.js",
+    "start:stockfish": "node stockfish-server/stockfishserver.js"
   },
   "keywords": [],
   "author": "",

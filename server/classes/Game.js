@@ -49,7 +49,7 @@ class Game {
                 return { valid: false, message: constant.TIMEOUT,gameState : this.getGameState()};
             }
 
-            // move = this.handleAutoPromotion(move); will handle later 
+            move = this.handleAutoPromotion(move);
     
             const move_data = this.chess.move(move);
             console.log("movedata",move_data);
@@ -91,6 +91,18 @@ class Game {
         this.endTime = Date.now();
     }
 
+    async checkIfPlayerTimeOut(){
+        const curr_turn = this.chess.turn();
+        const is_white_turn = curr_turn == 'w';
+        const player_id = is_white_turn ? this.white_id : this.black_id;
+        const now = Date.now();
+        const timeSpent = now - this.lastMoveTimestamp;
+        if(this.timeLeft[player_id]<=timeSpent){
+            this.handleTimeout(player_id);
+            await this.saveToRedis();
+        }
+    }
+
     async resign(resignedBy) {
         if(this.result.status != constant.ONGOING) return;
 
@@ -128,7 +140,21 @@ class Game {
         }
     }
 
-    getGameState() { // i should also update time here 
+    handleAutoPromotion(move) {
+        const piece = this.chess.get(move.from); 
+        if (piece && piece.type == 'p') {
+            const targetRank = move.to[1];
+            if (targetRank == '1' || targetRank == '8') {
+                return {
+                    ...move,
+                    promotion: move.promotion || 'q',
+                }
+            }
+        }
+        return move;
+    }
+
+    getGameState() {
         return {
             gameid: this.gameid,
             white_id: this.white_id,

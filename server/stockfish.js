@@ -1,6 +1,6 @@
 const { spawn } = require("child_process");
 
-function getBestMove(fen,depth = 15) {
+function getBestMove(fen,depth) {
   return new Promise((resolve) => {
     const engine = spawn("./bin/stockfish/stockfish-macos-m1-apple-silicon");
 

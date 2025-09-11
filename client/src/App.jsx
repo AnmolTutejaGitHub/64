@@ -14,6 +14,8 @@ import FindGame from './components/FindGame/FindGame';
 import Game from './components/Game/Game';
 import Profile from './components/Profile/Profile';
 import Pricing from './components/Pricing/Pricing';
+import StockfishGame from './components/Game/StockfishGame';
+import StockFishStart from './components/Start/StockFishStart';
 
 function App() {
   return (<div className='bg-[#111319]'>
@@ -43,6 +45,16 @@ function App() {
         <Route path="/game/:gameid" element={
            <ProtectedRoute>
             <Game/>
+          </ProtectedRoute>
+        }/>
+        <Route path="/stockfish/start" element={
+           <ProtectedRoute>
+              <StockFishStart/>
+          </ProtectedRoute>
+        }/>
+        <Route path="/stockfish/game/:gameid" element={
+           <ProtectedRoute>
+            <StockfishGame/>
           </ProtectedRoute>
         }/>
          <Route path="/profile" element={

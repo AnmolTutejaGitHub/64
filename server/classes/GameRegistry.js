@@ -5,6 +5,7 @@ const modeTimeMap = {
     [constant.BULLET]: 1 * 60 * 1000,
     [constant.BLITZ]: 3 * 60 * 1000,
     [constant.RAPID]: 10 * 60 * 1000,
+    [constant.STOCKFISH_GAME_MODE] : Number.MAX_SAFE_INTEGER,
 }
 
 class GameRegistry {

@@ -33,6 +33,7 @@ const constant = {
     DRAW_BY_AGREEMENT : 'draw_by_agreement',
     DRAW_OFFER : 'draw_offer',
     ACCEPT_DRAW : 'accept_draw',
-    TIMEOUT : 'timeout'
+    TIMEOUT : 'timeout',
+    STOCKFISH_GAME_MODE : 'stockfish_game_mode'
 }
 module.exports = constant;
