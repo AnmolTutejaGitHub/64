@@ -1,6 +1,7 @@
 const { Chess } = require('chess.js');
 const constant = require('../constants');
 const RedisClient = require('../RedisClient');
+const dbGame = require('../database/Models/Game.model');
 
 class Game {
     constructor(gameid,white_id,black_id,mode,timeInMilliseconds) {
@@ -64,7 +65,7 @@ class Game {
             this.lastMoveTimestamp = now;
     
             if(this.chess.isGameOver()) {
-                this.handleGameEnd();
+                await this.handleGameEnd();
             }
     
             await this.saveToRedis();
@@ -117,6 +118,7 @@ class Game {
 
         this.endTime = Date.now();
         await this.saveToRedis();
+        await this.publishEndedGame();
         return {
             result : this.result,
             gameState : this.getGameState()
@@ -171,10 +173,19 @@ class Game {
             startTime: this.startTime,
             endTime: this.endTime,
             timeLeft: this.timeLeft,
+            lastMoveTimestamp : this.lastMoveTimestamp
         }
     }
 
-    handleGameEnd() {
+    async publishEndedGame(){
+        console.log("handling game end");
+        console.log(this.result);
+        if(this.result.status!=constant.ONGOING){
+            await RedisClient.publish(`gameEnded`,this.getGameState());
+        }
+    }
+
+    async handleGameEnd() {
         if(this.chess.isCheckmate()) {
             this.result = {
                 status: constant.CHECKMATE,
@@ -205,6 +216,7 @@ class Game {
         }
 
         this.endTime = Date.now();
+        await this.publishEndedGame();
     }
 
     async saveToRedis() {
@@ -215,7 +227,34 @@ class Game {
         }
     }
 
-    saveToDatabase() {}
+    async saveToDatabase() {
+        try{
+            const gameDetails = await Redis.get(`game:${this.gameid}`);
+            const gameObj = JSON.parse(gameDetails);
+            // habdle exists too
+            const dbgame = new dbGame({
+                gameid: gameObj.gameid,
+                white_id: gameObj.white_id,
+                black_id: gameObj.black_id,
+                mode: gameObj.mode,
+                fen: gameObj.fen,
+                lastmove: gameObj.lastmove || {},
+                moves: gameObj.moves || [],
+                fenhistory: gameObj.fenhistory || [],
+                history: gameObj.history || [],
+                result: gameObj.result || {},
+                startTime: gameObj.startTime || new Date(),
+                endTime: gameObj.endTime || null,
+                timeInMilliseconds: gameObj.timeInMilliseconds || 0,
+                timeLeft: gameObj.timeLeft || {},
+                lastMoveTimestamp: gameObj.lastMoveTimestamp || null,
+                gameOver: gameObj.gameOver || false
+            })
+            await dbgame.save();
+        }catch(err){
+            console.log(err);
+        }
+    }
 
     static async loadGameFromRedis(gameid) {
         const game_data = await RedisClient.get(`game:${gameid}`);
