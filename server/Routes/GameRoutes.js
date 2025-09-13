@@ -21,7 +21,6 @@ router.post("/get-requestid", Auth, async (req,res) => {
         return res.status(200).send({
             requestId,
             mode,
-            redirect: `/find/${mode}/${requestId}`,
         });
     } catch (err) {
         console.log(err);
@@ -90,8 +89,6 @@ router.post("/find-match",Auth,async(req, res) => {
                 gameid,
                 white: JSON.parse(opponent).userid,
                 black: userid,
-                websocket_url: `http://localhost:9090`,
-                redirect: `/game/${mode}/${gameid}`,
                 mode : mode
             });
 
@@ -100,8 +97,6 @@ router.post("/find-match",Auth,async(req, res) => {
                 gameid,
                 white: JSON.parse(opponent).userid,
                 black: userid,
-                websocket_url: `http://localhost:9090`,
-                redirect: `/game/${mode}/${gameid}`,
                 mode : mode
             });
 

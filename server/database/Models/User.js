@@ -48,6 +48,13 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    elo : {
+        type : Number,
+        default : 400
+    },
+    gameHistory : {
+        type : [String]
+    }
 })
 
 UserSchema.pre('save',async function (next) {

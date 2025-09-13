@@ -173,7 +173,8 @@ class Game {
             startTime: this.startTime,
             endTime: this.endTime,
             timeLeft: this.timeLeft,
-            lastMoveTimestamp : this.lastMoveTimestamp
+            lastMoveTimestamp : this.lastMoveTimestamp,
+            timeInMilliseconds : this.timeInMilliseconds
         }
     }
 
@@ -229,9 +230,8 @@ class Game {
 
     async saveToDatabase() {
         try{
-            const gameDetails = await Redis.get(`game:${this.gameid}`);
+            const gameDetails = await dbGame.findOne({gameid : gameid});
             const gameObj = JSON.parse(gameDetails);
-            // habdle exists too
             const dbgame = new dbGame({
                 gameid: gameObj.gameid,
                 white_id: gameObj.white_id,
@@ -264,7 +264,8 @@ class Game {
             parsedgame.gameid,
             parsedgame.white_id,
             parsedgame.black_id,
-            parsedgame.mode
+            parsedgame.mode,
+            parsedgame.timeInMilliseconds
         )
 
         game.fen = parsedgame.fen;
@@ -274,12 +275,42 @@ class Game {
         game.result = parsedgame.result;
         game.startTime = parsedgame.startTime;
         game.endTime = parsedgame.endTime;
+        game.gameOver = parsedgame.gameOver;
+        game.result = parsedgame.result;
+        game.timeLeft = parsedgame.timeLeft;
+        game.lastMoveTimestamp = parsedgame.lastMoveTimestamp,
 
         game.chess.load(parsedgame.fen);
         return game;
     }
 
-    static loadGameFromDatabase(gameid) {}
+    static async loadGameFromDatabase(gameid) {
+        const game_data = await RedisClient.get(`game:${gameid}`);
+        if(game_data == null) return null;
+        const parsedgame = JSON.parse(game_data);
+        const game = new Game(
+            parsedgame.gameid,
+            parsedgame.white_id,
+            parsedgame.black_id,
+            parsedgame.mode,
+            parsedgame.timeInMilliseconds
+        )
+
+        game.fen = parsedgame.fen;
+        game.fenhistory = parsedgame.fenhistory;
+        game.moves = parsedgame.moves;
+        game.lastmove = parsedgame.lastmove;
+        game.result = parsedgame.result;
+        game.startTime = parsedgame.startTime;
+        game.endTime = parsedgame.endTime;
+        game.gameOver = parsedgame.gameOver;
+        game.result = parsedgame.result;
+        game.timeLeft = parsedgame.timeLeft;
+        game.lastMoveTimestamp = parsedgame.lastMoveTimestamp,
+
+        game.chess.load(parsedgame.fen);
+        return game;
+    }
 }
 
 module.exports = Game;

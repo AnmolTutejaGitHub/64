@@ -4,6 +4,9 @@ function Profile(){
     return(<div className="h-[100vh] w-[100vw] bg-[#111319]">
         <FramerMotionProvider>
             <NavBar/>
+            <div>
+                
+            </div>
         </FramerMotionProvider>
     </div>)
 }

@@ -7,6 +7,9 @@ const RedisClient = require('../RedisClient');
 const config = require('../config/config');
 const dbGame = require('../database/Models/Game.model');
 const connectMongoDB = require('../database/mongoose');
+const User = require("../database/Models/User");
+const EloRank = require('elo-rank');
+var elo = new EloRank(15);
 
 app.use(cors({
     origin: `${config.FRONTEND_URL}`,
@@ -67,7 +70,25 @@ subscriber.on('message',async (channel,message) => {
             await dbgame.save();
             console.log(dbgame);
             console.log(gameObj);
-    
+            let player1 = await User.findOne({_id : gameObj.white_id});
+            let player2 = await User.findOne({_id : gameObj.black_id});
+            console.log("Player1",player1);
+            console.log("player2",player2);
+            const winner = gameObj?.result?.winner?.winner_id;
+             console.log("winner",winner);
+            if(winner){
+                let expectedScoreA = elo.getExpected(player1.elo,player2.elo);
+                let expectedScoreB = elo.getExpected(player2.elo,player1.elo);
+                if(player1._id == winner){
+                    player1.elo = elo.updateRating(expectedScoreA,1,player1.elo);
+                    player2.elo = elo.updateRating(expectedScoreB,0,player2.elo);
+                }else {
+                    player1.elo = elo.updateRating(expectedScoreA,0,player1.elo);
+                    player2.elo = elo.updateRating(expectedScoreB,1,player2.elo);
+                }
+                await player1.save();
+                await player2.save();
+            }
         } catch (err) {
             console.error(err);
         }
