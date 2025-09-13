@@ -181,7 +181,7 @@ class Game {
         console.log("handling game end");
         console.log(this.result);
         if(this.result.status!=constant.ONGOING){
-            await RedisClient.publish(`gameEnded`,this.getGameState());
+            await RedisClient.publish(`gameEnded`,JSON.stringify(this.getGameState()));
         }
     }
 

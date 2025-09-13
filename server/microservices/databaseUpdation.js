@@ -6,12 +6,15 @@ const constant = require('../constants');
 const RedisClient = require('../RedisClient');
 const config = require('../config/config');
 const dbGame = require('../database/Models/Game.model');
+const connectMongoDB = require('../database/mongoose');
 
 app.use(cors({
     origin: `${config.FRONTEND_URL}`,
     credentials: true
 }));
 app.use(express.json());
+
+connectMongoDB();
 
 const PORT = 9191;
 
@@ -23,7 +26,7 @@ subscriber.on('message',async (channel,message) => {
             if (!message) return;
             console.log(message);
             const gameObj = JSON.parse(message);
-            const dbgame = await dbGame.findById(gameObj.gameid);
+            let dbgame = await dbGame.findOne({ gameid: gameObj.gameid });
             if(dbgame){
                 dbgame.gameid =  gameObj.gameid,
                 dbgame.white_id = gameObj.white_id,
