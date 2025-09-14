@@ -1,3 +1,3 @@
-Making Clock
-Letting client marked as abondanment
-Removing client from Queue
+Making Clock    
+Remvong from Queue/game Abondonment (Heartbeat)   
+Play with Friends    
