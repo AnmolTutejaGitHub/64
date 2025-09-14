@@ -1,19 +1,20 @@
-function GameDetailsRender({ gameDetails }) {
+import { useNavigate } from "react-router";
+function GameStateRender({ gameDetails }) {
+    const navigate = useNavigate();
     if (!gameDetails) return <div className="text-gray-400">No game details available.</div>;
   
-    const {gameid,white_id,black_id,mode,fen,history,moves,lastMoveTimestamp,startTime} = gameDetails;
+    const {gameid,white_id,black_id,mode,history,moves,startTime,result} = gameDetails;
   
     return (
       <div className="p-4 bg-[#1f2330] rounded-xl w-full max-w-4xl m-4 text-white shadow-lg border border-gray-700">
         <div className="mb-6">
           <h2 className="text-2xl font-bold mb-3 text-pink-400">Game Details</h2>
           <p className="text-gray-300">Game ID: <span className="text-white">{gameid}</span></p>
-          <p className="text-gray-300">White Player: <span className="text-white">{white_id}</span></p>
-          <p className="text-gray-300">Black Player: <span className="text-white">{black_id}</span></p>
+          <p className="text-gray-300 cursor-pointer" onClick={()=>navigate(`/profile/${white_id}`)}>White Player: <span className="text-white">{white_id}</span></p>
+          <p className="text-gray-300 cursor-pointer" onClick={()=>navigate(`/profile/${black_id}`)}>Black Player: <span className="text-white">{black_id}</span></p>
           <p className="text-gray-300">Mode: <span className="text-white">{mode}</span></p>
-          <p className="text-gray-300">Current FEN: <span className="text-white">{fen}</span></p>
-          <p className="text-gray-300">Last Move: <span className="text-white">{lastMoveTimestamp}</span></p>
           <p className="text-gray-300">Start Time: <span className="text-white">{startTime}</span></p>
+          <p className="text-gray-300">Result: <span className="text-white">{JSON.stringify(result)}</span></p>
         </div>
   
         <div className="mb-6">
@@ -62,4 +63,4 @@ function GameDetailsRender({ gameDetails }) {
     );
   };
   
-  export default GameDetailsRender;
+  export default GameStateRender;

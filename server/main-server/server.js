@@ -10,6 +10,7 @@ const GameRoutes = require('../Routes/GameRoutes');
 const http = require('http');
 const socketio = require('socket.io');
 const constant = require('../constants');
+const jwt = require("jsonwebtoken");
 
 const PORT = config.PORT;
 app.use(cors({

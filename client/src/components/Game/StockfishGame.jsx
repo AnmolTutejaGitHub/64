@@ -12,7 +12,23 @@ import GameDetailsRender from "./GameDetailsRender";
 
 let socket;
 
+const customPieces = {
+    wP: ({ svgStyle }) => <img src="/assets/pieces/wp.png" alt="White Pawn" style={svgStyle} />,
+    wR: ({ svgStyle }) => <img src="/assets/pieces/wr.png" alt="White Rook" style={svgStyle} />,
+    wN: ({ svgStyle }) => <img src="/assets/pieces/wn.png" alt="White Knight" style={svgStyle} />,
+    wB: ({ svgStyle }) => <img src="/assets/pieces/wb.png" alt="White Bishop" style={svgStyle} />,
+    wQ: ({ svgStyle }) => <img src="/assets/pieces/wq.png" alt="White Queen" style={svgStyle} />,
+    wK: ({ svgStyle }) => <img src="/assets/pieces/wk.png" alt="White King" style={svgStyle} />,
+    bP: ({ svgStyle }) => <img src="/assets/pieces/bp.png" alt="Black Pawn" style={svgStyle} />,
+    bR: ({ svgStyle }) => <img src="/assets/pieces/br.png" alt="Black Rook" style={svgStyle} />,
+    bN: ({ svgStyle }) => <img src="/assets/pieces/bn.png" alt="Black Knight" style={svgStyle} />,
+    bB: ({ svgStyle }) => <img src="/assets/pieces/bb.png" alt="Black Bishop" style={svgStyle} />,
+    bQ: ({ svgStyle }) => <img src="/assets/pieces/bq.png" alt="Black Queen" style={svgStyle} />,
+    bK: ({ svgStyle }) => <img src="/assets/pieces/bk.png" alt="Black King" style={svgStyle} />,
+}
+
 function StockfishGame(){
+    const token = localStorage.getItem("token");
     const {gameid} = useParams();
     const { userid } = useUserStore();
     const [fen,setFen] = useState("");
@@ -22,7 +38,7 @@ function StockfishGame(){
     useEffect(() => {
         if (!socket) {
             socket = io(import.meta.env.VITE_STOCKFISH_SERVER_API_URL,{
-                query: { userid, gameid }
+                query: { token,gameid }
               })
 
             socket.connect();
@@ -73,93 +89,6 @@ function StockfishGame(){
         })
         return true;
     }
-
-const customPieces = {
-  wP: ({ svgStyle }) => (
-    <img
-      src="/assets/pieces/wp.png"
-      alt="White Pawn"
-      style={svgStyle}
-    />
-  ),
-  wR: ({ svgStyle }) => (
-    <img
-      src="/assets/pieces/wr.png"
-      alt="White Rook"
-      style={svgStyle}
-    />
-  ),
-  wN: ({ svgStyle }) => (
-    <img
-      src="/assets/pieces/wn.png"
-      alt="White Knight"
-      style={svgStyle}
-    />
-  ),
-  wB: ({ svgStyle }) => (
-    <img
-      src="/assets/pieces/wb.png"
-      alt="White Bishop"
-      style={svgStyle}
-    />
-  ),
-  wQ: ({ svgStyle }) => (
-    <img
-      src="/assets/pieces/wq.png"
-      alt="White Queen"
-      style={svgStyle}
-    />
-  ),
-  wK: ({ svgStyle }) => (
-    <img
-      src="/assets/pieces/wk.png"
-      alt="White King"
-      style={svgStyle}
-    />
-  ),
-  bP: ({ svgStyle }) => (
-    <img
-      src="/assets/pieces/bp.png"
-      alt="Black Pawn"
-      style={svgStyle}
-    />
-  ),
-  bR: ({ svgStyle }) => (
-    <img
-      src="/assets/pieces/br.png"
-      alt="Black Rook"
-      style={svgStyle}
-    />
-  ),
-  bN: ({ svgStyle }) => (
-    <img
-      src="/assets/pieces/bn.png"
-      alt="Black Knight"
-      style={svgStyle}
-    />
-  ),
-  bB: ({ svgStyle }) => (
-    <img
-      src="/assets/pieces/bb.png"
-      alt="Black Bishop"
-      style={svgStyle}
-    />
-  ),
-  bQ: ({ svgStyle }) => (
-    <img
-      src="/assets/pieces/bq.png"
-      alt="Black Queen"
-      style={svgStyle}
-    />
-  ),
-  bK: ({ svgStyle }) => (
-    <img
-      src="/assets/pieces/bk.png"
-      alt="Black King"
-      style={svgStyle}
-    />
-  ),
-}
 
     return (
         <div className="h-[100vh] w-[100vw] bg-[#111319]">

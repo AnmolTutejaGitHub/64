@@ -77,15 +77,40 @@ subscriber.on('message',async (channel,message) => {
             const winner = gameObj?.result?.winner?.winner_id;
              console.log("winner",winner);
             if(winner){
-                let expectedScoreA = elo.getExpected(player1.elo,player2.elo);
-                let expectedScoreB = elo.getExpected(player2.elo,player1.elo);
-                if(player1._id == winner){
-                    player1.elo = elo.updateRating(expectedScoreA,1,player1.elo);
-                    player2.elo = elo.updateRating(expectedScoreB,0,player2.elo);
-                }else {
-                    player1.elo = elo.updateRating(expectedScoreA,0,player1.elo);
-                    player2.elo = elo.updateRating(expectedScoreB,1,player2.elo);
+                if(dbgame.mode == constant.RAPID){
+                    let expectedScoreA = elo.getExpected(player1.RapidElo,player2.RapidElo);
+                    let expectedScoreB = elo.getExpected(player2.RapidElo,player1.RapidElo);
+                    if(player1._id == winner){
+                        player1.RapidElo = elo.updateRating(expectedScoreA,1,player1.RapidElo);
+                        player2.RapidElo = elo.updateRating(expectedScoreB,0,player2.RapidElo);
+                    }else {
+                    player1.RapidElo = elo.updateRating(expectedScoreA,0,player1.RapidElo);
+                    player2.RapidElo = elo.updateRating(expectedScoreB,1,player2.RapidElo);
                 }
+    
+                }else if(dbgame.mode == constant.BLITZ){
+                    let expectedScoreA = elo.getExpected(player1.BlitzElo,player2.BlitzElo);
+                    let expectedScoreB = elo.getExpected(player2.BlitzElo,player1.BlitzElo);
+                    if(player1._id == winner){
+                        player1.BlitzElo = elo.updateRating(expectedScoreA,1,player1.BlitzElo);
+                        player2.BlitzElo = elo.updateRating(expectedScoreB,0,player2.BlitzElo);
+                    }else {
+                    player1.BlitzElo = elo.updateRating(expectedScoreA,0,player1.BlitzElo);
+                    player2.BlitzElo = elo.updateRating(expectedScoreB,1,player2.BlitzElo);
+                    }
+                }else if(dbgame.mode == constant.BULLET){
+                    let expectedScoreA = elo.getExpected(player1.BLITZ,player2.BulletElo);
+                    let expectedScoreB = elo.getExpected(player2.BulletElo,player1.BulletElo);
+                    if(player1._id == winner){
+                        player1.BulletElo = elo.updateRating(expectedScoreA,1,player1.BulletElo);
+                        player2.BulletElo = elo.updateRating(expectedScoreB,0,player2.BulletElo);
+                    }else {
+                    player1.BulletElo = elo.updateRating(expectedScoreA,0,player1.BulletElo);
+                    player2.BulletElo = elo.updateRating(expectedScoreB,1,player2.BulletElo);
+                    }
+                }   
+                player1?.gameHistory?.push(dbgame.gameid);
+                player2?.gameHistory?.push(dbgame.gameid);
                 await player1.save();
                 await player2.save();
             }

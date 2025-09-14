@@ -28,7 +28,6 @@ async function generateRequestId(mode) {
         const data = response.data;
         navigate(`${data.redirect}`);
         console.log(response.data);
-        navigate
     } catch (err) {
         console.log(err);
         toast.error(err.response?.data?.message || err.response?.data?.error || err.response?.data || "some error occurred");
@@ -36,6 +35,13 @@ async function generateRequestId(mode) {
         toast.dismiss(id);
     }
 }
+
+const modes = [
+    { name: "Rapid",icon: RapidIcon,key: "rapid",color: "yellow-400" },
+    { name: "Blitz",icon: BlitzIcon,key: "blitz",color: "blue-400" },
+    { name: "Bullet",icon: BulletIcon,key: "bullet",color: "red-400" },
+    { name: "Stockfish",icon: FaRobot,key: "stockfish",color: "green-400" },
+];
 
 function StockfishOptions(){
     navigate("/stockfish/start");
@@ -56,25 +62,25 @@ function StockfishOptions(){
             </FramerMotionProvider>
             <FramerMotionProvider>
             <div className="flex-1 flex flex-col gap-6">
-                <div className="flex justify-center items-center gap-4 text-white bg-[#FF33AE] p-5 w-98 rounded-md cursor-pointer hover:border-2 hover:border-white hover:bg-[#111319] hover:text-[#FF33AE] font-semibold"
+                <div className="flex items-center justify-center w-98 gap-4 bg-[#1a1c23] p-4 rounded-2xl cursor-pointer border border-gray-700 hover:bg-[#2a2d36] transition-colors duration-200"
                 onClick={()=>generateRequestId('rapid')}>
-                    <RapidIcon color="white"/>
-                    <div>Rapid</div>
+                    <RapidIcon className='w-6 h-6 text-yellow-400'/>
+                    <div className="font-semibold text-white">Rapid</div>
                 </div>
-                <div className="flex justify-center items-center gap-4 text-white bg-[#FF33AE] p-5 w-98 rounded-md cursor-pointer hover:border-2 hover:border-white hover:bg-[#111319] hover:text-[#FF33AE] font-semibold"
+                <div className="flex items-center justify-center w-98 gap-4 bg-[#1a1c23] p-4 rounded-2xl cursor-pointer border border-gray-700 hover:bg-[#2a2d36] transition-colors duration-200"
                 onClick={()=>generateRequestId('blitz')}>
-                    <BlitzIcon color="white"/>
-                    <div>Blitz</div>
+                    <BlitzIcon className='w-6 h-6 text-blue-400'/>
+                    <div className="font-semibold text-white">Blitz</div>
                 </div>
-                <div className="flex justify-center items-center gap-4 text-white bg-[#FF33AE] p-5 w-98 rounded-md cursor-pointer hover:border-2 hover:border-white hover:bg-[#111319] hover:text-[#FF33AE] font-semibold"
+                <div className="flex items-center justify-center w-98 gap-4 bg-[#1a1c23] p-4 rounded-2xl cursor-pointer border border-gray-700 hover:bg-[#2a2d36] transition-colors duration-200"
                 onClick={()=>generateRequestId('bullet')}>
-                    <BulletIcon color="white"/>
-                    <div>Bullet</div>
+                    <BulletIcon className='w-6 h-6 text-red-400'/>
+                    <div className="font-semibold text-white">Bullet</div>
                 </div>
-                <div className="flex justify-center items-center gap-4 text-white bg-[#FF33AE] p-5 w-98 rounded-md cursor-pointer hover:border-2 hover:border-white hover:bg-[#111319] hover:text-[#FF33AE] font-semibold"
+                <div className="flex items-center justify-center w-98 gap-4 bg-[#1a1c23] p-4 rounded-2xl cursor-pointer border border-gray-700 hover:bg-[#2a2d36] transition-colors duration-200"
                 onClick={StockfishOptions}>
-                <div className="text-2xl"><FaRobot /></div>
-                <div>Play With Stockfish</div>
+                <div className="text-2xl text-green-400"><FaRobot /></div>
+                <div className="font-semibold text-white">Play With Stockfish</div>
                 </div>
                 
             </div>

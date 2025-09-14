@@ -16,6 +16,7 @@ import Profile from './components/Profile/Profile';
 import Pricing from './components/Pricing/Pricing';
 import StockfishGame from './components/Game/StockfishGame';
 import StockFishStart from './components/Start/StockFishStart';
+import GameReview from './components/GameReview/GameReview';
 
 function App() {
   return (<div className='bg-[#111319]'>
@@ -57,12 +58,13 @@ function App() {
             <StockfishGame/>
           </ProtectedRoute>
         }/>
-         <Route path="/profile" element={
+         <Route path="/profile/:profileid" element={
            <ProtectedRoute>
             <Profile/>
           </ProtectedRoute>
         }/>
         <Route path="/pricing" element={<Pricing/>}/>
+        <Route path="/game/review/:gameid" element={<GameReview/>}/>
       </Routes>
       </UserProvider>
      </BrowserRouter>

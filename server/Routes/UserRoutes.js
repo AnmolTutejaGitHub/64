@@ -50,7 +50,8 @@ router.post('/signup',SignupLimiter, async (req, res) => {
             const delc = await User.deleteOne({email : email});
             console.log(delc)
         }
-        const user = new User({ email, password, name });
+        const profilePic = `https://api.dicebear.com/9.x/bottts/svg?seed=${name}`;
+        const user = new User({ email,password,name,profilePic });
         await user.save();
         const token = jwt.sign({ user_id: user._id }, config.JWT_TOKEN_SECRET, { expiresIn: '30d' });
         res.status(200).send({ token });
@@ -256,6 +257,27 @@ router.post("/updateUser", Auth, async (req, res) => {
     } catch (err) {
         res.status(500).send(err);
     }
+})
+
+router.get("/profile/:profileid",async(req,res)=>{
+   try{
+    const userid = req.params.profileid;
+    const user = await User.findOne({_id : userid});
+    const profile = {
+        _id : user.id,
+        name : user.name,
+        RapidElo : user.RapidElo,
+        BlitzElo : user.BlitzElo,
+        BulletElo : user.BulletElo,
+        gameHistory: [...user.gameHistory].reverse(),
+        createdAt : user.createdAt,
+        email : user.email,
+        profilePic : user.profilePic
+    }
+    return res.status(200).send(profile);
+   }catch(err){
+    res.status(500).send(err);
+   }
 })
 
 module.exports = router;

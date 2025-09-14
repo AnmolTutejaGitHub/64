@@ -7,10 +7,12 @@ const socketio = require('socket.io');
 const cors = require('cors');
 const constant = require('../constants');
 const GameRegistry = require('../classes/GameRegistry');
-const getBestMove = require('../stockfish');
+const {getBestMove} = require('./stockfish');
 const { v4: uuidv4 } = require("uuid");
 const Auth = require('../middleware/Auth');
 const RedisClient = require('../RedisClient');
+const jwt = require("jsonwebtoken");
+const createStockfishUser = require('./CreateStockfishUser');
 
 app.use(cors({
     origin: `${config.FRONTEND_URL}`,
@@ -28,7 +30,7 @@ const io = socketio(server,{
 });
 
 const PORT = process.env.PORT || 8081;
-const STOCKFISH_USER_ID = Number.MAX_SAFE_INTEGER;
+const STOCKFISH_USER_ID = '68c6ae4bae31a4d4e1d19477'; // createStockfishUser();
 
 const gameRegistry = new GameRegistry();
 
@@ -54,7 +56,9 @@ app.post('/api/stockfish/create-stockfish-game',Auth,async (req,res)=>{
 })
 
 io.on('connection',async(socket)=>{
-    const userid = socket.handshake.query.userid;
+    const token = socket.handshake.query.token;
+    const decoded = jwt.verify(token,config.JWT_TOKEN_SECRET);
+    const userid = decoded.user_id;
     const gameid = socket.handshake.query.gameid;
     const depth = await RedisClient.hget('stockfishdepth',gameid) || 15;
     console.log(depth)

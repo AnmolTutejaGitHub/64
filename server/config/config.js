@@ -8,6 +8,8 @@ const config = {
     JWT_RESET_PASSWORD_SECRET : process.env.JWT_RESET_PASSWORD_SECRET,
     REDIS_URL : process.env.REDIS_URL,
     NODEMAILER_MAIL : process.env.NODEMAILER_MAIL,
+    STOCKFISH_EMAIL : process.env.STOCKFISH_EMAIL,
+    STOCKFISH_PASSWORD : process.env.STOCKFISH_PASSWORD,
 }
 
 module.exports  = config;

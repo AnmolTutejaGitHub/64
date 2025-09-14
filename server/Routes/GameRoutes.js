@@ -5,6 +5,7 @@ const Auth = require("../middleware/Auth");
 const { v4: uuidv4 } = require("uuid");
 const constant = require('../constants');
 const axios = require("axios");
+const dbGame = require('../database/Models/Game.model');
 
 // requestIdMap --> mapping request id to client 
 // requestIdResolved --> if that request id is resolved 
@@ -21,6 +22,7 @@ router.post("/get-requestid", Auth, async (req,res) => {
         return res.status(200).send({
             requestId,
             mode,
+            redirect: `/find/${mode}/${requestId}`,
         });
     } catch (err) {
         console.log(err);
@@ -89,6 +91,8 @@ router.post("/find-match",Auth,async(req, res) => {
                 gameid,
                 white: JSON.parse(opponent).userid,
                 black: userid,
+                websocket_url: `http://localhost:9090`,
+                redirect: `/game/${mode}/${gameid}`,
                 mode : mode
             });
 
@@ -97,6 +101,8 @@ router.post("/find-match",Auth,async(req, res) => {
                 gameid,
                 white: JSON.parse(opponent).userid,
                 black: userid,
+                websocket_url: `http://localhost:9090`,
+                redirect: `/game/${mode}/${gameid}`,
                 mode : mode
             });
 
@@ -157,7 +163,7 @@ router.post("/remove-from-queue",Auth,async (req,res) => {
 
 
             local list = redis.call("LRANGE",queueKey,0,-1)
-            for i=1, #list do
+            for i=1,#list do
                 if list[i] == userid then
                     redis.call("LREM",queueKey,0,list[i])
                     break
@@ -177,6 +183,27 @@ router.post("/remove-from-queue",Auth,async (req,res) => {
         console.error(err);
         return res.status(500).send(err);
     }
-});
+})
+
+router.get("/review/:gameid",async(req,res) => {
+    try {
+      const { gameid } = req.params;
+  
+      if(!gameid) {
+        return res.status(400).send({ error: "Gameid is required" });
+      }
+  
+      const game = await dbGame.findOne({ gameid });
+  
+      if(!game) {
+        return res.status(404).send({ error: "Game not found" });
+      }
+  
+      res.status(200).send(game);
+    } catch(err) {
+      console.log(err);
+      res.status(500).send(err);
+    }
+  })
 
 module.exports = router;

@@ -21,6 +21,9 @@ const UserSchema = new mongoose.Schema({
             }
         }
     },
+    profilePic : {
+        type : String
+    },
     password: {
         type: String,
         required: true,
@@ -48,9 +51,17 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    elo : {
+    RapidElo : {
         type : Number,
         default : 400
+    },
+    BlitzElo : {
+        type : Number,
+        default : 400,
+    },
+    BulletElo : {
+        type : Number,
+        default : 400,
     },
     gameHistory : {
         type : [String]

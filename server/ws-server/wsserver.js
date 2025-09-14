@@ -8,6 +8,7 @@ const cors = require('cors');
 const constant = require('../constants');
 const RedisClient = require('../RedisClient');
 const GameRegistry = require('../classes/GameRegistry');
+const jwt = require("jsonwebtoken");
 
 app.use(cors({
     origin: `${config.FRONTEND_URL}`,
@@ -52,7 +53,9 @@ subscriber.subscribe('game:new').then(() => {
 });
 
 io.on('connection',async(socket)=>{
-    const userid = socket.handshake.query.userid;
+    const token = socket.handshake.query.token;
+    const decoded = jwt.verify(token,config.JWT_TOKEN_SECRET);
+    const userid = decoded.user_id;
     const gameid = socket.handshake.query.gameid;
     const game = await gameRegistry.getGame(gameid);
     // gameRegistry.createGame ?? if client hit before pub/sub worked then ?? 

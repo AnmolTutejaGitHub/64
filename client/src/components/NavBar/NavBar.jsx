@@ -4,7 +4,7 @@ import { useState } from "react";
 import useUserStore from "../../store/userStore";
 
 function NavBar() {
-  const { username,isAuthenticated,clearUser } = useUserStore();
+  const { username,isAuthenticated,clearUser,userid } = useUserStore();
   const [menuOpen,setMenuOpen] = useState(false);
 
   function logout() {
@@ -58,7 +58,7 @@ function NavBar() {
 
           {isAuthenticated ? (
             <>
-              <Link to="/profile" onClick={() => setMenuOpen(false)} className="font-semibold">{username}</Link>
+              <Link to={`/profile/${userid}`} onClick={() => setMenuOpen(false)} className="font-semibold">{username}</Link>
               <div onClick={logout} className="cursor-pointer p-3 pl-6 pr-6 rounded-l-full rounded-r-full bg-[#FF33AE] hover:bg-[#E81896] text-white w-25">Logout</div>
             </>
           ) : (
@@ -92,7 +92,7 @@ function NavBar() {
           <div className="flex gap-4 items-center text-xl">
           {isAuthenticated ? (
             <>
-              <Link to="/profile" className="font-semibold">{username}</Link>
+              <Link to={`/profile/${userid}`} className="font-semibold">{username}</Link>
               <div onClick={logout} className="cursor-pointer p-3 pl-6 pr-6 rounded-l-full rounded-r-full bg-[#FF33AE] hover:bg-[#E81896] text-white">Logout</div>
             </>
           ) : (
