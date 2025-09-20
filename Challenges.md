@@ -1,3 +1,3 @@
-Making Clock    
-Remvong from Queue/game Abondonment (Heartbeat)   
-Play with Friends    
+1. Making Clock    
+2. Remvong from Queue/game Abondonment (Heartbeat)   
+3. Play with Friends    
