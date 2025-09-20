@@ -206,4 +206,50 @@ router.get("/review/:gameid",async(req,res) => {
     }
   })
 
+  router.post('/generate-invite-url',async(req,res)=>{
+    try{
+        const uuid = uuidv4();
+        const {mode} = req.body;
+        // uuid -> {mode,player1=null,player2=null} to redis invite map and ttl is 10 min
+        return res.status(200).send({
+            invite : uuid,
+            message : 'game will be initiated between first 2 players to hit invite url and link will be expired in 10 mins'
+        });
+    }catch(err){
+        console.log(err);
+        res.status(500).send(err);
+    }
+  })
+
+  router.get('/invite/:inviteid',Auth,async(req,res)=>{
+    try{
+        const userid = req.userId;
+        // get from inivtemap uuid
+        // use lua script to it if player1 is null set userid to player1
+        // else set player2 and use 
+        // io.to(opponent_socketid).emit(constant.MATCH_FOUND, {
+        //     gameid,
+        //     white: JSON.parse(opponent).userid,
+        //     black: userid,
+        //     websocket_url: `http://localhost:9090`,
+        //     redirect: `/game/${mode}/${gameid}`,
+        //     mode : mode
+        // });
+
+        // const user_socketid = await RedisClient.hget("socketMap",userid);
+        // io.to(user_socketid).emit(constant.MATCH_FOUND,{
+        //     gameid,
+        //     white: JSON.parse(opponent).userid,
+        //     black: userid,
+        //     websocket_url: `http://localhost:9090`,
+        //     redirect: `/game/${mode}/${gameid}`,
+        //     mode : mode
+        // });
+
+    }catch(err){
+        console.log(err);
+        res.status(500).send(err);
+    }
+  })
+
 module.exports = router;
