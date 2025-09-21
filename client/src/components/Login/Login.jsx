@@ -38,7 +38,7 @@ function Login() {
         }
     }
     return (
-        <div className="flex items-center justify-center bg-[#111319] h-[100vh] w-[100vw]">
+        <section className="flex items-center justify-center bg-[#111319] h-[100vh] w-[100vw]">
         <FramerMotionProvider>
           <fieldset className="rounded-xl w-[30rem] h-[30rem] p-8 shadow-xl bg-[#2D3748]">
             <legend className="text-2xl font-bold text-[#FF33AE] mb-6">Login</legend>
@@ -60,22 +60,22 @@ function Login() {
               onChange={(e)=>setPassword(e.target.value)}
             />
   
-            <div className="text-right mt-2">
+            <p className="text-right mt-2">
               <Link to="/forget-password"  className="text-lg text-[#FF33AE] hover:text-[#FF33AE] hover:underline font-medium">Forgot Password?</Link>
-            </div>
+            </p>
   
             <button className="btn mt-6 w-full bg-[#FF33AE] hover:bg-[#FF33AE]/70 text-white rounded-lg text-lg font-semibold p-2"
                 onClick={login}>
               Login
             </button>
   
-            <div className="text-lg text-[#F9F1F1] mt-6 text-center">
+            <p className="text-lg text-[#F9F1F1] mt-6 text-center">
               Don't have an account?{" "}
               <Link to="/signup" className="text-[#FF33AE] hover:text-[#FF33AE] font-semibold hover:underline">Sign up</Link>
-            </div>
+            </p>
           </fieldset>
           </FramerMotionProvider>
-        </div>
+        </section>
     )
   }
   

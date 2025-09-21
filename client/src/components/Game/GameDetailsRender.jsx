@@ -4,7 +4,7 @@ function GameDetailsRender({ gameDetails }) {
     const {gameid,white_id,black_id,mode,fen,history,moves,lastMoveTimestamp,startTime} = gameDetails;
   
     return (
-      <div className="p-4 bg-[#1f2330] rounded-xl w-full max-w-4xl m-4 text-white shadow-lg border border-gray-700">
+      <section className="p-4 bg-[#1f2330] rounded-xl max-w-3xl m-4 text-white shadow-lg border border-gray-700">
         <div className="mb-6">
           <h2 className="text-2xl font-bold mb-3 text-pink-400">Game Details</h2>
           <p className="text-gray-300">Game ID: <span className="text-white">{gameid}</span></p>
@@ -18,7 +18,7 @@ function GameDetailsRender({ gameDetails }) {
   
         <div className="mb-6">
           <h3 className="text-xl font-semibold mb-2 text-pink-400">Moves History</h3>
-          <div className="p-2 bg-[#2a2d36] rounded border border-gray-600 max-h-52 overflow-y-auto">
+          <div className="p-2 bg-[#2a2d36] rounded border border-gray-600 max-h-30 overflow-y-auto">
             {history.map((move, index) => (
               <p key={index} className="border-b border-gray-700 py-1 text-gray-300">
                 {index + 1}. <span className="text-white">{move}</span>
@@ -29,7 +29,7 @@ function GameDetailsRender({ gameDetails }) {
   
         <div>
           <h3 className="text-xl font-semibold mb-2 text-pink-400">Detailed Moves</h3>
-          <div className="overflow-x-auto bg-[#2a2d36] rounded border border-gray-600 p-2 max-h-72">
+          <div className="overflow-x-auto bg-[#2a2d36] rounded border border-gray-600 p-2 max-h-50">
             <table className="w-full border-collapse text-gray-300">
               <thead>
                 <tr className="text-pink-400">
@@ -43,7 +43,7 @@ function GameDetailsRender({ gameDetails }) {
                 </tr>
               </thead>
               <tbody>
-                {moves.map((movee, idx) => (
+                {moves.map((movee,idx) => (
                   <tr key={idx} className="hover:bg-[#3f4457] text-gray-300">
                     <td className="px-2 py-1 border">{idx + 1}</td>
                     <td className="px-2 py-1 border capitalize">{movee.color}</td>
@@ -58,7 +58,7 @@ function GameDetailsRender({ gameDetails }) {
             </table>
           </div>
         </div>
-      </div>
+      </section>
     );
   };
   

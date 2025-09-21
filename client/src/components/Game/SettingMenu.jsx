@@ -1,7 +1,7 @@
 import { CiSettings } from "react-icons/ci";
 function SettingMenu({resign}){
     return (
-        <div>
+        <section>
             <div className="fab">
                 <div tabIndex={0} role="button" className="btn btn-lg btn-circle bg-[#ec4899]">
                     <div className="inline-flex items-center justify-center text-white font-bold">
@@ -14,7 +14,7 @@ function SettingMenu({resign}){
                 <div className="text-white text-xl">Resign <button className="btn btn-lg btn-circle" onClick={resign}>R</button></div>
                 <div className="text-white text-xl">Draw <button className="btn btn-lg btn-circle">D</button></div>
                 </div>
-        </div>
+        </section>
     )
 }
 export default SettingMenu;

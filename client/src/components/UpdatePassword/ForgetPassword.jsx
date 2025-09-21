@@ -23,7 +23,7 @@ function ForgetPassword() {
     }
   }
   return (
-      <div className="flex items-center justify-center bg-[#111319] h-[100vh] w-[100vw]">
+      <section className="flex items-center justify-center bg-[#111319] h-[100vh] w-[100vw]">
         <FramerMotionProvider>
         <fieldset className="rounded-xl w-[30rem] h-[26rem] p-8 shadow-xl bg-[#2D3748]">
           <legend className="text-2xl font-bold text-[#FF33AE] mb-6">
@@ -47,7 +47,7 @@ function ForgetPassword() {
             Send Reset Link
           </button>
 
-          <div className="text-lg text-[#F9F1F1] mt-6 text-center">
+          <p className="text-lg text-[#F9F1F1] mt-6 text-center">
             Remember your password?{" "}
             <Link
               to="/login"
@@ -55,10 +55,10 @@ function ForgetPassword() {
             >
               Login
             </Link>
-          </div>
+          </p>
         </fieldset>
         </FramerMotionProvider>
-    </div>
+    </section>
   )
 }
 export default ForgetPassword;

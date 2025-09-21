@@ -91,7 +91,7 @@ function StockfishGame(){
     }
 
     return (
-        <div className="h-[100vh] w-[100vw] bg-[#111319]">
+        <section className="h-[100vh] w-[100vw] bg-[#111319]">
             {gameNotFound && 
                 <GameNotFound/>
             }
@@ -125,7 +125,7 @@ function StockfishGame(){
              <GameDetailsRender gameDetails={gameDetails}/>
             </div>
             <ChessClock gameDetails={gameDetails} userId={userid}/>
-        </div>
+        </section>
     )
 }
 export default StockfishGame;

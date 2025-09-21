@@ -13,7 +13,7 @@ function NavBar() {
   }
 
   return (
-    <div className="p-7 bg-[#111724] text-[#C3CCDA]">
+    <nav className="p-7 bg-[#111724] text-[#C3CCDA]">
       <div className="flex md:hidden justify-between items-center">
         <div className="flex gap-2 items-center text-xl">
           <FaGithub />
@@ -103,7 +103,7 @@ function NavBar() {
         </div>
         </div>
       </div>
-    </div>
+    </nav>
   );
 }
 

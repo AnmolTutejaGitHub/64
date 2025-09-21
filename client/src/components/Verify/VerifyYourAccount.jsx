@@ -26,7 +26,7 @@ function VerifyYourAccount() {
   };
 
   return (
-      <div className="h-[100vh] w-[100vw] flex items-center justify-center bg-[#111319]">
+      <section className="h-[100vh] w-[100vw] flex items-center justify-center bg-[#111319]">
         <FramerMotionProvider>
         <fieldset className="rounded-xl w-[30rem] h-[18rem] p-8 shadow-xl bg-[#2D3748]">
           <legend className="text-2xl font-bold text-[#FF33AE] mb-6">
@@ -46,7 +46,7 @@ function VerifyYourAccount() {
           </button>
         </fieldset>
         </FramerMotionProvider>
-      </div>
+      </section>
   );
 }
 

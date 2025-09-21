@@ -62,7 +62,7 @@ function GameReview() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#111319] text-white flex flex-row items-center p-6 justify-center">
+    <section className="min-h-screen w-full bg-[#111319] text-white flex flex-row items-center p-6 justify-center">
       {gameDetails ? (
         <>
         <div>
@@ -98,7 +98,7 @@ function GameReview() {
       ) : (
         <p>Loading...</p>
       )}
-    </div>
+    </section>
   )
 }
 

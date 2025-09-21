@@ -32,7 +32,7 @@ function Profile() {
   }, []);
 
   return (
-    <div className="min-h-screen w-full bg-[#111319] text-white">
+    <section className="min-h-screen w-full bg-[#111319] text-white">
       <FramerMotionProvider>
         <NavBar />
         <div className="flex justify-center mt-4 px-4">
@@ -109,7 +109,7 @@ function Profile() {
           </div>
         </div>
       </FramerMotionProvider>
-    </div>
+    </section>
   )
 }
 

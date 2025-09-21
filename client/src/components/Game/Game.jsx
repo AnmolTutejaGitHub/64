@@ -96,7 +96,7 @@ function Game(){
     }
 
     return (
-        <div className="h-[100vh] w-[100vw] bg-[#111319]">
+        <section className="h-screen w-screen bg-[#111319]">
             {gameNotFound && 
                 <GameNotFound/>
             }
@@ -130,7 +130,7 @@ function Game(){
             <GameDetailsRender gameDetails={gameDetails}/>
             </div>
             <ChessClock gameDetails={gameDetails} userId={userid}/>
-        </div>
+        </section>
     )
 }
 export default Game;

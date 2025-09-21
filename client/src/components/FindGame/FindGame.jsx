@@ -101,7 +101,7 @@ function FindGame() {
    },[])
 
    return (
-    <div className="bg-[#111319] h-screen w-screen flex flex-col items-center justify-center text-white">
+    <section className="bg-[#111319] h-screen w-screen flex flex-col items-center justify-center text-white">
       <div className="max-w-xl text-center mb-8">
         <p className="text-lg italic text-gray-300">"{chessQuote?.quote}"</p>
         <p className="mt-2 text-sm text-gray-400">— {chessQuote?.name}</p>
@@ -111,7 +111,7 @@ function FindGame() {
         Waiting for opponent...
       </div>
       <button onClick={canceltheSearch} className="p-4 text-[#FF33AE] hover:text-[#FF33AE]/70 cursor-pointer font-bold text-md">Cancel The Search</button>
-    </div>
+    </section>
   )
 }
 

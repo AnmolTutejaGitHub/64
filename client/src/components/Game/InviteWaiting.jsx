@@ -83,16 +83,16 @@ function InviteWaiting() {
    },[])
 
    return (
-    <div className="bg-[#111319] h-screen w-screen flex flex-col items-center justify-center text-white">
+    <section className="bg-[#111319] h-screen w-screen flex flex-col items-center justify-center text-white">
       <div className="max-w-xl text-center mb-8">
         <p className="text-lg italic text-gray-300">"{chessQuote?.quote}"</p>
         <p className="mt-2 text-sm text-gray-400">— {chessQuote?.name}</p>
       </div>
   
-      <div className="text-2xl font-semibold text-gray-200 animate-pulse">
+      <p className="text-2xl font-semibold text-gray-200 animate-pulse">
         Waiting for opponent...
-      </div>
-    </div>
+      </p>
+    </section>
   )
 }
 

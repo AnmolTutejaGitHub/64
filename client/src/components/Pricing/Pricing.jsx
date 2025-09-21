@@ -1,7 +1,7 @@
 import NavBar from "../NavBar/NavBar";
 import FramerMotionProvider from "../../Provider/FramerMotionProvider/FramerMotionProvider";
 function Pricing(){
-    return (<div className="h-[100vh] w-[100vw] bg-[#111319] flex flex-col flex-grow">
+    return (<section className="h-[100vh] w-[100vw] bg-[#111319] flex flex-col flex-grow">
         <FramerMotionProvider>
             <NavBar/>
         </FramerMotionProvider>
@@ -47,7 +47,7 @@ function Pricing(){
             </div>
         </FramerMotionProvider>
         </div>
-    </div>)
+    </section>)
 }
 
 export default Pricing;

@@ -39,7 +39,7 @@ function InviteGame(){
     }
 
     return (
-    <div className="h-[100vh] w-[100-vw] bg-[#111319] flex flex-col">
+    <section className="h-[100vh] w-[100-vw] bg-[#111319] flex flex-col">
         <FramerMotionProvider>
             <NavBar/>
         </FramerMotionProvider>
@@ -52,27 +52,27 @@ function InviteGame(){
                 </div>
             }
             <div className="flex-1 flex flex-col gap-6">
-                <div className="flex items-center justify-center w-98 gap-4 bg-[#1a1c23] p-4 rounded-2xl cursor-pointer border border-gray-700 hover:bg-[#2a2d36] transition-colors duration-200"
+                <button className="flex items-center justify-center w-98 gap-4 bg-[#1a1c23] p-4 rounded-2xl cursor-pointer border border-gray-700 hover:bg-[#2a2d36] transition-colors duration-200"
                 onClick={()=>generateInvite('rapid')}>
                     <RapidIcon className='w-6 h-6 text-yellow-400'/>
-                    <div className="font-semibold text-white">Rapid</div>
-                </div>
-                <div className="flex items-center justify-center w-98 gap-4 bg-[#1a1c23] p-4 rounded-2xl cursor-pointer border border-gray-700 hover:bg-[#2a2d36] transition-colors duration-200"
+                    <p className="font-semibold text-white">Rapid</p>
+                </button>
+                <button className="flex items-center justify-center w-98 gap-4 bg-[#1a1c23] p-4 rounded-2xl cursor-pointer border border-gray-700 hover:bg-[#2a2d36] transition-colors duration-200"
                 onClick={()=>generateInvite('blitz')}>
                     <BlitzIcon className='w-6 h-6 text-blue-400'/>
-                    <div className="font-semibold text-white">Blitz</div>
-                </div>
-                <div className="flex items-center justify-center w-98 gap-4 bg-[#1a1c23] p-4 rounded-2xl cursor-pointer border border-gray-700 hover:bg-[#2a2d36] transition-colors duration-200"
+                    <p className="font-semibold text-white">Blitz</p>
+                </button>
+                <button className="flex items-center justify-center w-98 gap-4 bg-[#1a1c23] p-4 rounded-2xl cursor-pointer border border-gray-700 hover:bg-[#2a2d36] transition-colors duration-200"
                 onClick={()=>generateInvite('bullet')}>
                     <BulletIcon className='w-6 h-6 text-red-400'/>
-                    <div className="font-semibold text-white">Bullet</div>
-                </div>
+                    <p className="font-semibold text-white">Bullet</p>
+                </button>
                 
             </div>
             </FramerMotionProvider>
         </div>
         
-    </div>)
+    </section>)
 }
 
 export default InviteGame;
