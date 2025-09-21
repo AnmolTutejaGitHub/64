@@ -88,7 +88,7 @@ function NavBar() {
         <div className="flex gap-6 items-center text-lg">
           <Link to="/">Home</Link>
           <Link to="/start">Start</Link>
-          <Link to="/pricing">Pricing</Link>
+          <Link to="/game/invite">Create Game</Link>
           <div className="flex gap-4 items-center text-xl">
           {isAuthenticated ? (
             <>

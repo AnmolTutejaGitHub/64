@@ -35,7 +35,7 @@ function Profile() {
     <div className="min-h-screen w-full bg-[#111319] text-white">
       <FramerMotionProvider>
         <NavBar />
-        <div className="flex justify-center mt-16 px-4">
+        <div className="flex justify-center mt-4 px-4">
           <div className="bg-[#1a1c23] p-8 rounded-2xl shadow-lg w-full max-w-md border border-gray-700">
             <div className="text-center">
               <img
@@ -84,7 +84,7 @@ function Profile() {
         </div>
 
         <div className="mt-10 px-4 flex justify-center">
-          <div className="w-full max-w-2xl bg-[#1a1c23] rounded-2xl shadow-lg p-6 border border-gray-700">
+          <div className="w-full max-w-2xl bg-[#1a1c23] rounded-2xl shadow-lg p-6 border border-gray-700 mb-10">
             <h3 className="text-lg font-semibold border-b border-gray-700 pb-2">
               Game History
             </h3>

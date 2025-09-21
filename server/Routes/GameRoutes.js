@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require("uuid");
 const constant = require('../constants');
 const axios = require("axios");
 const dbGame = require('../database/Models/Game.model');
+const config = require('../config/config');
 
 // requestIdMap --> mapping request id to client 
 // requestIdResolved --> if that request id is resolved 
@@ -210,46 +211,95 @@ router.get("/review/:gameid",async(req,res) => {
     try{
         const uuid = uuidv4();
         const {mode} = req.body;
-        // uuid -> {mode,player1=null,player2=null} to redis invite map and ttl is 10 min
+        // game:uuid -> {mode,player1=null,player2=null} to redis invite map and ttl is 10 min
+        await RedisClient.hset(`gameInvite:${uuid}`,{
+            mode: mode,
+            player1: '',
+            player2: ''
+          });
+          await RedisClient.expire(`gameInvite:${uuid}`,600);
         return res.status(200).send({
+            redirect : `${config.FRONTEND_URL}/invite/${uuid}`,
             invite : uuid,
             message : 'game will be initiated between first 2 players to hit invite url and link will be expired in 10 mins'
-        });
+        })
     }catch(err){
         console.log(err);
         res.status(500).send(err);
     }
   })
 
-  router.get('/invite/:inviteid',Auth,async(req,res)=>{
-    try{
+  router.get('/invite/:inviteid',Auth,async(req,res) => {
+    try {
         const userid = req.userId;
-        // get from inivtemap uuid
-        // use lua script to it if player1 is null set userid to player1
-        // else set player2 and use 
-        // io.to(opponent_socketid).emit(constant.MATCH_FOUND, {
-        //     gameid,
-        //     white: JSON.parse(opponent).userid,
-        //     black: userid,
-        //     websocket_url: `http://localhost:9090`,
-        //     redirect: `/game/${mode}/${gameid}`,
-        //     mode : mode
-        // });
+        const inviteid = req.params.inviteid;
+        const gameKey = `gameInvite:${inviteid}`;
+        console.log(gameKey);
+        const io = req.app.get("io");
 
-        // const user_socketid = await RedisClient.hget("socketMap",userid);
-        // io.to(user_socketid).emit(constant.MATCH_FOUND,{
-        //     gameid,
-        //     white: JSON.parse(opponent).userid,
-        //     black: userid,
-        //     websocket_url: `http://localhost:9090`,
-        //     redirect: `/game/${mode}/${gameid}`,
-        //     mode : mode
-        // });
+        const script = `
+        local gameKey = KEYS[1]
+        local userid = ARGV[1]
 
-    }catch(err){
+        if redis.call("EXISTS",gameKey) == 0 then
+            return "expired"
+        end
+
+        local player1 = redis.call("HGET",gameKey,"player1")
+        local player2 = redis.call("HGET",gameKey,"player2")
+
+        if not player1 or player1 == "" then
+            redis.call("HSET",gameKey,"player1",userid)
+            return "player1"
+        elseif not player2 or player2 == "" then
+            redis.call("HSET", gameKey,"player2",userid)
+            return "player2"
+        else
+            return "full"
+        end
+        `;
+
+        const assigned = await RedisClient.eval(script,1,gameKey,userid);
+
+        if (assigned == "expired") {
+            return res.status(400).send({ message: "Game invite expired or does not exist" });
+        }
+        if (assigned == "full") {
+            return res.status(400).send({ message: "Game already full" });
+        }
+
+        const game = await RedisClient.hgetall(gameKey);
+
+        const player1Socket = await RedisClient.hget("socketMap",game.player1);
+        const player2Socket = await RedisClient.hget("socketMap",game.player2);
+
+
+        if(game.player1 && game.player2) {
+            const init_game_detail = JSON.stringify({
+                gameid : inviteid,
+                white_id: game.player1,
+                black_id: game.player2,
+                mode : game.mode
+            })
+            
+            await RedisClient.publish("game:new",init_game_detail);
+            const payload = {
+                gameid: inviteid,
+                white: game.player1,
+                black: game.player2,
+                websocket_url: `http://localhost:9090`,
+                redirect: `/game/${game.mode}/${inviteid}`,
+                mode: game.mode
+            }
+
+            io.to(player1Socket).emit(constant.MATCH_FOUND,payload);
+            io.to(player2Socket).emit(constant.MATCH_FOUND,payload);
+        }
+
+        res.status(200).send({ status : 'success' });
+        } catch (err) {
         console.log(err);
         res.status(500).send(err);
-    }
-  })
-
+        }
+    })
 module.exports = router;
