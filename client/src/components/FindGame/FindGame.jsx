@@ -100,6 +100,17 @@ function FindGame() {
         getChessQuote();
    },[])
 
+
+   // will implement later 
+//    useEffect(() => {
+//     if (!userid) return;
+//     const intervalId = setInterval(() => {
+//         console.log(`heartbeat emitted for ${userid} at ${new Date()}...`);
+//         socket.emit('heartbeat');
+//     }, 15 * 1000); // 15 sec
+//     return () => clearInterval(intervalId);
+//     },[userid,socket]);
+
    return (
     <section className="bg-[#111319] h-screen w-screen flex flex-col items-center justify-center text-white">
       <div className="max-w-xl text-center mb-8">

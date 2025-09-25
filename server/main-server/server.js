@@ -47,6 +47,19 @@ io.on('connection',async(socket)=>{
         }
     }
 
+    socket.on('heartbeat',()=>{
+        // update redis like redisqeueuemap 
+        // redis map -> {userid,lastheatbeat}
+        // publish to a microservice which uses lua scripting and then removing from queue atomically 
+        // and then interval ???????? if someone on quue crrtime - lastheqartbeat >30 sec remove from queue 
+        // problem facing is it ok to loop over queue if so then loop over all thhere queues simuntaneously 
+        // find user lastheartbeat from map 
+        // if curr - lastheartbeat >=30 remove that preson from queue ??
+        // lol mf i am taking atomic opeation on queuee to remove ??
+
+        RedisClient.hset("queueheartbeatmap",userid,Date.now());
+    })
+
     socket.on('disconnect',()=>{})
 })
 
