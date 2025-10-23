@@ -34,11 +34,11 @@ function getBestMove(fen,depth) {
           if (line.startsWith("bestmove")) {
             sf.stdout.off("data",onData);
             resolve(line.split(" ")[1]);
-            busy = false;
             if (queue.length > 0) {
               const next = queue.shift();
+              busy = true;
               next();
-            }
+            }else busy = false;
             return;
           }
         }
