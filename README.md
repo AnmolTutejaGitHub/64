@@ -1,3 +1,9 @@
+## NOTE : 
+I have some bills to pay, so ask me to start the AWS servers.   
+Please note that the AWS public DNS may change as there is no static IP assigned.   
+Current URL (may change after restart):   
+`http://ec2-52-91-4-210.compute-1.amazonaws.com:5173`
+
 # 64
 <p align="center">
   <img src="https://socialify.git.ci/AnmolTutejaGithub/64/image?font=Raleway&forks=1&issues=1&language=1&name=1&owner=1&pattern=Floating+Cogs&pulls=1&stargazers=1&theme=Dark" alt="64" />
