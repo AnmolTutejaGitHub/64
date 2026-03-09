@@ -4,7 +4,7 @@ const RedisClient = require('../RedisClient');
 const dbGame = require('../database/Models/Game.model');
 
 class Game {
-    constructor(gameid,white_id,black_id,mode,timeInMilliseconds) {
+    constructor(gameid, white_id, black_id, mode, timeInMilliseconds, onEnd = () => { }) {
         this.gameid = gameid;
         this.white_id = white_id;
         this.black_id = black_id;
@@ -15,7 +15,7 @@ class Game {
         this.fenhistory = [this.fen];
         this.lastmove = null;
         this.moves = [];
-        this.result = {status: constant.ONGOING,winner: null,method : null};
+        this.result = { status: constant.ONGOING, winner: null, method: null };
 
         this.startTime = Date.now();
         this.endTime = null;
@@ -25,93 +25,94 @@ class Game {
             [black_id]: timeInMilliseconds
         };
         this.lastMoveTimestamp = Date.now();
+        this.onEnd = onEnd;
     }
 
-    async makeMove(move,player_id) {
-        try{
-            if(this.result.status != constant.ONGOING){
-                return { valid: false,message: GAME_ALREADY_ENDED,gameState : this.getGameState()};
+    async makeMove(move, player_id) {
+        try {
+            if (this.result.status != constant.ONGOING) {
+                return { valid: false, message: GAME_ALREADY_ENDED, gameState: this.getGameState() };
             }
-    
+
             const curr_turn = this.chess.turn();
             const is_white_turn = curr_turn == 'w';
-                
-            if ((is_white_turn && player_id != this.white_id) || (!is_white_turn && player_id != this.black_id)){
-                return { valid: false,message: constant.NOT_YOUR_TURN ,gameState : this.getGameState()}
+
+            if ((is_white_turn && player_id != this.white_id) || (!is_white_turn && player_id != this.black_id)) {
+                return { valid: false, message: constant.NOT_YOUR_TURN, gameState: this.getGameState() }
             }
 
             const now = Date.now();
             const timeSpent = now - this.lastMoveTimestamp;
             this.timeLeft[player_id] -= timeSpent;
-    
+
             if (this.timeLeft[player_id] <= 0) {
                 this.handleTimeout(player_id);
                 await this.saveToRedis();
-                return { valid: false, message: constant.TIMEOUT,gameState : this.getGameState()};
+                return { valid: false, message: constant.TIMEOUT, gameState: this.getGameState() };
             }
 
             move = this.handleAutoPromotion(move);
-    
+
             const move_data = this.chess.move(move);
-            console.log("movedata",move_data);
-            if(move_data == null) {
-                return { valid: false,message: constant.INVALID_MOVE,gameState : this.getGameState() };
+            console.log("movedata", move_data);
+            if (move_data == null) {
+                return { valid: false, message: constant.INVALID_MOVE, gameState: this.getGameState() };
             }
-    
+
             this.fen = this.chess.fen();
             this.fenhistory.push(this.fen);
-            this.lastmove = {...move_data,player_id : player_id,timestamp : Date.now()};
+            this.lastmove = { ...move_data, player_id: player_id, timestamp: Date.now() };
             this.moves.push(this.lastmove);
             this.lastMoveTimestamp = now;
-    
-            if(this.chess.isGameOver()) {
+
+            if (this.chess.isGameOver()) {
                 await this.handleGameEnd();
             }
-    
+
             await this.saveToRedis();
-    
+
             return {
                 valid: true,
-                gameState : this.getGameState()
+                gameState: this.getGameState()
             }
-        }catch(err){
+        } catch (err) {
             console.log(err);
         }
-        
+
     }
 
     handleTimeout(playerId) {
         this.result = {
             status: constant.TIMEOUT,
             winner: {
-                winner_id : playerId == this.white_id ? this.black_id : this.white_id,
-                color : playerId == this.white_id ? constant.BLACK : constant.WHITE,
+                winner_id: playerId == this.white_id ? this.black_id : this.white_id,
+                color: playerId == this.white_id ? constant.BLACK : constant.WHITE,
             },
             method: constant.TIMEOUT
         }
         this.endTime = Date.now();
     }
 
-    async checkIfPlayerTimeOut(){
+    async checkIfPlayerTimeOut() {
         const curr_turn = this.chess.turn();
         const is_white_turn = curr_turn == 'w';
         const player_id = is_white_turn ? this.white_id : this.black_id;
         const now = Date.now();
         const timeSpent = now - this.lastMoveTimestamp;
-        if(this.timeLeft[player_id]<=timeSpent){
+        if (this.timeLeft[player_id] <= timeSpent) {
             this.handleTimeout(player_id);
             await this.saveToRedis();
         }
     }
 
     async resign(resignedBy) {
-        if(this.result.status != constant.ONGOING) return;
+        if (this.result.status != constant.ONGOING) return;
 
         this.result = {
             status: constant.RESIGN,
             winner: {
-                winner_id :resignedBy == this.white_id ? this.black_id : this.white_id,
-                color : resignedBy == this.white_id ? constant.BLACK : constant.WHITE,
+                winner_id: resignedBy == this.white_id ? this.black_id : this.white_id,
+                color: resignedBy == this.white_id ? constant.BLACK : constant.WHITE,
             },
             method: constant.RESIGN,
         }
@@ -120,13 +121,13 @@ class Game {
         await this.saveToRedis();
         await this.publishEndedGame();
         return {
-            result : this.result,
-            gameState : this.getGameState()
+            result: this.result,
+            gameState: this.getGameState()
         }
     }
 
-    async handleDraw(){
-        if(this.result.status != constant.ONGOING) return;
+    async handleDraw() {
+        if (this.result.status != constant.ONGOING) return;
 
         this.result = {
             status: constant.DRAW,
@@ -137,13 +138,13 @@ class Game {
         this.endTime = Date.now();
         await this.saveToRedis();
         return {
-            result : this.result,
-            gameState : this.getGameState()
+            result: this.result,
+            gameState: this.getGameState()
         }
     }
 
     handleAutoPromotion(move) {
-        const piece = this.chess.get(move.from); 
+        const piece = this.chess.get(move.from);
         if (piece && piece.type == 'p') {
             const targetRank = move.to[1];
             if (targetRank == '1' || targetRank == '8') {
@@ -164,45 +165,46 @@ class Game {
             mode: this.mode,
             fen: this.fen,
             history: this.chess.history(),
-            fenhistory : this.fenhistory,
+            fenhistory: this.fenhistory,
             moves: this.moves,
             turn: this.chess.turn(),
-            lastmove : this.lastmove,
+            lastmove: this.lastmove,
             gameOver: this.chess.isGameOver() || this.result.status !== constant.ONGOING,
             result: this.result,
             startTime: this.startTime,
             endTime: this.endTime,
             timeLeft: this.timeLeft,
-            lastMoveTimestamp : this.lastMoveTimestamp,
-            timeInMilliseconds : this.timeInMilliseconds
+            lastMoveTimestamp: this.lastMoveTimestamp,
+            timeInMilliseconds: this.timeInMilliseconds
         }
     }
 
-    async publishEndedGame(){
+    async publishEndedGame() {
         console.log("handling game end");
         console.log(this.result);
-        if(this.result.status!=constant.ONGOING){
-            await RedisClient.publish(`gameEnded`,JSON.stringify(this.getGameState()));
+        if (this.result.status != constant.ONGOING) {
+            await RedisClient.publish(`gameEnded`, JSON.stringify(this.getGameState()));
+            this.onEnd(this.gameid);
         }
     }
 
     async handleGameEnd() {
-        if(this.chess.isCheckmate()) {
+        if (this.chess.isCheckmate()) {
             this.result = {
                 status: constant.CHECKMATE,
                 winner: {
-                    winner_id :this.chess.turn() == "w" ? this.black_id : this.white_id,
-                    color : this.chess.turn() == "w" ? constant.BLACK : constant.WHITE,
+                    winner_id: this.chess.turn() == "w" ? this.black_id : this.white_id,
+                    color: this.chess.turn() == "w" ? constant.BLACK : constant.WHITE,
                 },
                 method: constant.CHECKMATE
             }
-        }else if (this.chess.isStalemate()) {
+        } else if (this.chess.isStalemate()) {
             this.result = {
                 status: constant.DRAW,
                 winner: null,
                 method: constant.STALEMATE
             }
-        } else if(this.chess.isInsufficientMaterial()) {
+        } else if (this.chess.isInsufficientMaterial()) {
             this.result = {
                 status: constant.DRAW,
                 winner: null,
@@ -221,16 +223,16 @@ class Game {
     }
 
     async saveToRedis() {
-        try{
-            await RedisClient.set(`game:${this.gameid}`,JSON.stringify(this.getGameState()),'EX',3600);
-        }catch(err){
+        try {
+            await RedisClient.set(`game:${this.gameid}`, JSON.stringify(this.getGameState()), 'EX', 3600);
+        } catch (err) {
             console.log(err);
         }
     }
 
     async saveToDatabase() {
-        try{
-            const gameDetails = await dbGame.findOne({gameid : gameid});
+        try {
+            const gameDetails = await dbGame.findOne({ gameid: gameid });
             const gameObj = JSON.parse(gameDetails);
             const dbgame = new dbGame({
                 gameid: gameObj.gameid,
@@ -251,14 +253,14 @@ class Game {
                 gameOver: gameObj.gameOver || false
             })
             await dbgame.save();
-        }catch(err){
+        } catch (err) {
             console.log(err);
         }
     }
 
     static async loadGameFromRedis(gameid) {
         const game_data = await RedisClient.get(`game:${gameid}`);
-        if(game_data == null) return null;
+        if (game_data == null) return null;
         const parsedgame = JSON.parse(game_data);
         const game = new Game(
             parsedgame.gameid,
@@ -280,13 +282,13 @@ class Game {
         game.timeLeft = parsedgame.timeLeft;
         game.lastMoveTimestamp = parsedgame.lastMoveTimestamp,
 
-        game.chess.load(parsedgame.fen);
+            game.chess.load(parsedgame.fen);
         return game;
     }
 
     static async loadGameFromDatabase(gameid) {
         const game_data = await RedisClient.get(`game:${gameid}`);
-        if(game_data == null) return null;
+        if (game_data == null) return null;
         const parsedgame = JSON.parse(game_data);
         const game = new Game(
             parsedgame.gameid,
@@ -308,7 +310,7 @@ class Game {
         game.timeLeft = parsedgame.timeLeft;
         game.lastMoveTimestamp = parsedgame.lastMoveTimestamp,
 
-        game.chess.load(parsedgame.fen);
+            game.chess.load(parsedgame.fen);
         return game;
     }
 }

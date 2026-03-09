@@ -113,19 +113,139 @@ VITE_STOCKFISH_SERVER_API_URL="http://localhost:8081"
 - **Email Verification**: After signup, users must verify their email before accessing their dashboard.
 
 #### Backend Architecture
-- **Main Server**: Handles account creation , sending mails , initializing games
-- **Microservices** : 
-    - **Game Server** : game play logic
-    - **Stockfish Server** : Server creating a stockfish instance and finding best move in a position
-    - **Batch update microservice** : updates the database in batch (updating game state to db)
+The backend is split into multiple servers, all communicating through **Redis** as a shared backbone.
 
-#### Frontend Architecture
-The frontend of Payzoid is built with React and React Router for navigation. Key components include:
+| Server | Port | Responsibility |
+|---|---|---|
+| **Main Server** | 8080 | Auth, matchmaking, REST APIs, socket registry |
+| **WS (Game) Server** | 9090 | Real-time gameplay via WebSocket |
+| **Stockfish Server** | 8081 | gameplay with stockfish |
+| **DB Microservice** | — | Batch-writes ended games to MongoDB |
 
-- **State Management**: Using Zustand for user state.
-- **Page Components**: Organized under src/pages/ for each route.
-- **ProtectedRoute**: Custom wrappers to secure specific routes.
-- **Toasts**: Notifications for actions using react-hot-toast.
+---
+
+#### Matchmaking & Game Flow
+
+```
+Phase 1 — Get a Request ID
+──────────────────────────
+Client  →  POST /api/game/get-requestid  { mode }
+        ←  { requestId, redirect: "/find/blitz/<requestId>" }
+Redis:     HSET requestIdMap   requestId → { userid, mode }
+
+Phase 2 — Register Socket on Main Server
+─────────────────────────────────────────
+Client opens socket to Main Server (on the /find/<mode>/<requestId> page)
+Redis:     HSET socketMap   userid → socket.id
+           (used later to push MATCH_FOUND to the right client)
+
+Phase 3 — Enter the Matchmaking Queue
+──────────────────────────────────────
+Client  →  POST /api/game/find-match  { mode, requestId }
+
+Atomic Lua script runs in Redis:
+  ┌──────────────────────────────────────────────────┐
+  │  opponent = LPOP queue:<mode>                    │
+  │  if opponent found:                              │
+  │      HDEL queueMap:<mode>  opponent              │
+  │      return { userid: opponent, requestId }      │
+  │  else (no one waiting yet):                      │
+  │      RPUSH queue:<mode>  myUserId                │
+  │      HSET queueMap:<mode>  myUserId → requestId  │
+  │      return nil                                  │
+  └──────────────────────────────────────────────────┘
+
+  → No opponent:   return { status: "WAITING" }
+                   Client sits on /find/<mode>/<requestId> page and waits.
+
+  → Opponent found (second player to hit find-match):
+      gameid = new UUID
+      PUBLISH "game:new" → { gameid, white_id, black_id, mode }
+      Lookup socket IDs of both players from socketMap
+      Emit MATCH_FOUND to both sockets:
+          { gameid, white, black, websocket_url, redirect }
+      HSET requestIdResolved  requestId → gameDetails (both players)
+      return { status: "MATCH_FOUND", gameid }
+
+  ⚡ Client does NOT poll — the server pushes MATCH_FOUND
+     via socket the moment an opponent is found.
+
+Phase 4 — WS Server Creates the Game (Redis Pub/Sub)
+──────────────────────────────────────────────────────
+WS Server is subscribed to "game:new" channel.
+On message:
+    gameRegistry.createGame(gameid, white_id, black_id, mode)
+    → Game object created in WS server memory
+    → Game state saved to Redis as  game:<gameid>  (TTL 1hr)
+
+Phase 5 — Players Connect to WS Server & Play
+───────────────────────────────────────────────
+Both clients receive MATCH_FOUND and redirect to /game/blitz/<gameid>
+They connect their socket to WS Server (port 9090):
+    handshake: { token (JWT), gameid }
+
+    → gameRegistry.getGame(gameid)  (memory → Redis fallback)
+    → socket.join(gameid)           both players in same room
+
+Events handled by WS Server:
+    NEW_MOVE  →  game.makeMove()   →  broadcast to room
+    RESIGN    →  game.resign()     →  publishEndedGame()
+                                         → Redis publish "gameEnded"
+                                         → game deleted from registry
+
+Phase 6 — Game End
+────────────────────
+publishEndedGame():
+    PUBLISH "gameEnded"  →  DB Microservice picks it up
+                             and batch-writes final state to MongoDB
+    onEnd(gameid)        →  Game object removed from WS server memory
+```
+
+---
+
+#### Redis Keys Reference
+
+| Key | Type | Purpose |
+|---|---|---|
+| `requestIdMap` | Hash | `requestId → { userid, mode }` — pending matchmaking requests |
+| `requestIdResolved` | Hash | `requestId → gameDetails` — marks a request as matched/cancelled |
+| `queue:<mode>` | List | FIFO queue of userids waiting for a match |
+| `queueMap:<mode>` | Hash | `userid → requestId` — maps queued users to their request |
+| `socketMap` | Hash | `userid → socketId` — used to emit events to specific clients |
+| `game:<gameid>` | String | Full serialized game state (TTL: 1 hour) |
+| `gameInvite:<uuid>` | Hash | `{ mode, player1, player2 }` — private invite state (TTL: 10 min) |
+| `queueheartbeatmap` | Hash | `userid → timestamp` — heartbeat for detecting stale queue entries |
+
+---
+
+#### TL;DR — Matchmaking
+
+1. **Client clicks "Start Game" (Rapid/Blitz/Bullet)**
+   → hits `POST /api/game/get-requestid`
+   → server generates a `requestId` (UUID), stores `requestId → { userid, mode }` in Redis (`requestIdMap`)
+   → redirects client to `/find/<mode>/<requestId>`
+
+2. **Client lands on `/find/<mode>/<requestId>`**
+   → opens a socket connection to the **Main Server** (sends `userid` in handshake)
+   → Main Server stores `userid → socketId` in Redis (`socketMap`) and fires back `socket:registered`
+
+3. **On `socket:registered`, client hits `POST /api/game/find-match` once (not a poll)**
+   → server first checks:
+   - **Already in queue with same requestId?** → return `WAITING` (no-op)
+   - **requestId already resolved?** → match already found, return `RESOLVED`
+   → then runs an atomic Lua script in Redis:
+   - **No one in queue?** → `RPUSH queue:<mode>`, stores `userid → requestId` in `queueMap:<mode>`, return `WAITING`
+   - **Opponent found?** → `LPOP` opponent, create `gameid`, then:
+     - mark both `requestId`s as resolved in `requestIdResolved` (so stale retries are handled)
+     - publish `game:new` to Redis pub/sub → WS Server creates the Game object
+     - look up both socket IDs from `socketMap`
+     - **push `match_found` socket event to both clients**
+
+4. **Client receives `match_found` → navigates to `/game/<gameid>`**
+   → connects to **WS Server** with `{ token (JWT), gameid }` in handshake
+   → WS Server decodes JWT to get `userid`, loads the game, joins the socket room
+   → both players are now in the same room — moves, resign etc. flow in real-time
+
 
 ### Changelog
 Refer to [CHANGELOG](CHANGELOG.md) for version history and updates.
